@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>ClickEstate Realtor Portal</title>
+<link rel='stylesheet' href='/assets/css/shared.css'><link rel='stylesheet' href='/realtor/realtor.css'></head>
+<body class='texture'>
+<section id='loginView' class='login-wrap'><div class='card login-card'><h1>Realtor Portal</h1><p class='muted'>Manage listings, requests, and pipeline in one place.</p>
+<input id='user' class='input' placeholder='Agency ID, Email or Realtor ID'><input id='pass' class='input' type='password' placeholder='Password'><button id='loginBtn' class='btn btn-primary'>Login</button></div></section>
+<section id='appView' class='shell hidden'>
+<aside class='sidebar'><h3>ClickEstate</h3><a class='nav-item active' data-tab='dashboard'>Dashboard</a><a class='nav-item' data-tab='listings'>Listings</a><a class='nav-item' data-tab='pipeline'>Leads Pipeline</a><a class='nav-item' data-tab='requests'>Requests</a><a class='nav-item' data-tab='profile'>Profile</a><a class='nav-item' data-tab='settings'>Settings</a></aside>
+<main class='main'><div id='content'></div></main></section>
+<script src='/assets/js/api.js'></script><script src='/assets/js/ui.js'></script><script src='/assets/js/formatters.js'></script><script src='/realtor/realtor.js'></script>
+</body></html>

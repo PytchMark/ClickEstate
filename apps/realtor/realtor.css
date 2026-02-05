@@ -1,0 +1,4 @@
+.login-wrap{min-height:100vh;display:grid;place-items:center}.login-card{width:min(420px,92vw);display:grid;gap:10px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,95vw);background:#0c0c0c;border-left:1px solid #2a2a2a;padding:16px;transform:translateX(110%);transition:.28s}.drawer.open{transform:translateX(0)}
+.table{width:100%;border-collapse:collapse}.table td,.table th{border-bottom:1px solid #222;padding:8px;text-align:left}.status-col{min-height:180px}
+.pipeline{grid-template-columns:repeat(4,1fr)}
