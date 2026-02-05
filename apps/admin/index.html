@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>ClickEstate Admin</title><link rel='stylesheet' href='/assets/css/shared.css'><link rel='stylesheet' href='/admin/admin.css'></head>
+<body class='texture'>
+<section id='login' class='login-wrap'><div class='card login-card'><h1>Platform Admin</h1><input id='adminUser' class='input' placeholder='Username or email'><input id='adminPass' class='input' type='password' placeholder='Password'><button id='adminLogin' class='btn btn-primary'>Login</button></div></section>
+<section id='dash' class='hidden'><div class='main'><h2>Admin Dashboard</h2><div id='summary' class='grid kpis'></div>
+<div class='card'><div style='display:flex;gap:8px'><input id='search' class='input' placeholder='Search agencies'><button id='loadAgencies' class='btn'>Search</button><button id='exportCsv' class='btn'>Export CSV</button></div><div id='agencies'></div></div>
+<div class='grid two'><div class='card'><h3>Create Agency + Realtor</h3><input id='cAgency' class='input' placeholder='AGY-1001'><input id='cRealtor' class='input' placeholder='REA-1001'><input id='cEmail' class='input' placeholder='email'><input id='cPass' class='input' placeholder='password'><button id='createAgency' class='btn btn-primary'>Create</button></div>
+<div class='card'><h3>Reset Password</h3><input id='rAgency' class='input' placeholder='agency id'><input id='rRealtor' class='input' placeholder='realtor id'><input id='rPass' class='input' placeholder='new password'><button id='resetPass' class='btn'>Reset</button></div></div>
+</div></section>
+<script src='/assets/js/api.js'></script><script src='/assets/js/ui.js'></script><script src='/admin/admin.js'></script>
+</body></html>

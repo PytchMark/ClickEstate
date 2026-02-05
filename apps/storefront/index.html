@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>ClickEstate Storefront</title>
+<link rel='stylesheet' href='/assets/css/shared.css'><link rel='stylesheet' href='/storefront/storefront.css'></head>
+<body class='texture'>
+<header class='hero'><video autoplay muted loop playsinline class='hero-video'><source src='https://res.cloudinary.com/demo/video/upload/v1696580507/samples/sea-turtle.mp4' type='video/mp4'></video><div class='overlay'></div>
+<div class='hero-content'><h1>Verified Listings. Faster Viewings. Trusted Realtors.</h1><p>Enter up to 3 Agency IDs and discover premium homes now.</p>
+<div class='search-bar'><input id='agencyIds' class='input' placeholder='AGY-0001,AGY-0002'><button id='loadBtn' class='btn btn-primary'>Load Listings</button></div></div></header>
+<main class='main'><section id='agencyHeader' class='card hidden'></section>
+<section class='filters card'><div class='grid fgrid'><select id='parish'><option value=''>All Parishes</option></select><select id='ptype'><option value=''>All Types</option><option>house</option><option>apartment</option><option>land</option></select><input id='beds' class='input' placeholder='Bedrooms min'><input id='maxPrice' class='input' placeholder='Max price'></div></section>
+<section id='listingGrid' class='grid cards'></section></main>
+<div id='modal' class='modal hidden'><div class='modal-body card'><button id='closeModal' class='btn'>Close</button><div id='modalContent'></div></div></div>
+<script src='/assets/js/api.js'></script><script src='/assets/js/ui.js'></script><script src='/assets/js/formatters.js'></script><script src='/storefront/storefront.js'></script>
+</body></html>
