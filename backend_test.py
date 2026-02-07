@@ -324,6 +324,12 @@ class ClickEstateAPITester:
         print("\n🛡️ Authorization Tests")
         self.test_protected_endpoints_without_auth()
         
+        # AI endpoint tests
+        print("\n🤖 AI Endpoint Tests")
+        self.test_ai_endpoints_without_auth()
+        self.test_ai_endpoints_with_admin_token()
+        self.test_ai_endpoints_structure()
+        
         # Admin functionality tests
         print("\n👑 Admin Functionality Tests")
         self.test_admin_protected_endpoints()
