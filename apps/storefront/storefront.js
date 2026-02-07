@@ -762,59 +762,35 @@ function initEntranceSound() {
   const video = document.getElementById('hero-video');
   if (!sound || !video) return;
   
-  // Set volume (adjust as needed - 0.0 to 1.0)
-  sound.volume = 0.4;
+  // Set volume
+  sound.volume = 0.5;
   
-  // Function to play sound and video together
-  const playEntranceMedia = () => {
+  // Play sound and video on first interaction only
+  const playOnInteraction = () => {
     if (entranceSoundPlayed) return;
     entranceSoundPlayed = true;
     
-    // Play both sound and video simultaneously
-    Promise.all([
-      sound.play().catch(err => console.log('Audio play prevented:', err.message)),
-      video.play().catch(err => console.log('Video play prevented:', err.message))
-    ]);
+    // Play sound
+    sound.play();
     
-    // Add a cinematic fade-in effect to the video
-    gsap.fromTo(video, 
-      { opacity: 0.3 }, 
-      { opacity: 1, duration: 2, ease: 'power2.out' }
-    );
-    
-    // Remove listeners after first play
-    document.removeEventListener('click', playEntranceMedia);
-    document.removeEventListener('scroll', playEntranceMedia);
-    document.removeEventListener('touchstart', playEntranceMedia);
-    document.removeEventListener('mousemove', playEntranceMediaOnMove);
-  };
-  
-  // Play on mouse move (with delay to feel natural)
-  let moveTimeout;
-  const playEntranceMediaOnMove = () => {
-    if (entranceSoundPlayed) return;
-    clearTimeout(moveTimeout);
-    moveTimeout = setTimeout(playEntranceMedia, 300);
-  };
-  
-  // Try to play immediately (works if user has interacted before)
-  Promise.all([
-    sound.play(),
-    video.play()
-  ]).then(() => {
-    entranceSoundPlayed = true;
+    // Play video with fade effect
+    video.play();
     gsap.fromTo(video, { opacity: 0.3 }, { opacity: 1, duration: 2, ease: 'power2.out' });
-  }).catch(() => {
-    // Autoplay blocked - wait for user interaction
-    // Set video to paused state with low opacity until interaction
-    video.pause();
-    gsap.set(video, { opacity: 0.3 });
     
-    document.addEventListener('click', playEntranceMedia, { once: true });
-    document.addEventListener('scroll', playEntranceMedia, { once: true });
-    document.addEventListener('touchstart', playEntranceMedia, { once: true });
-    document.addEventListener('mousemove', playEntranceMediaOnMove);
-  });
+    // Remove all listeners
+    document.removeEventListener('click', playOnInteraction);
+    document.removeEventListener('scroll', playOnInteraction);
+    document.removeEventListener('touchstart', playOnInteraction);
+  };
+  
+  // Set initial video state
+  video.pause();
+  gsap.set(video, { opacity: 0.3 });
+  
+  // Listen for user interaction
+  document.addEventListener('click', playOnInteraction);
+  document.addEventListener('scroll', playOnInteraction);
+  document.addEventListener('touchstart', playOnInteraction);
 }
 
 // ==================== Testimonials Banner ====================
