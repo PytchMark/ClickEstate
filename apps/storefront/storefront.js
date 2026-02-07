@@ -686,6 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLenis();
   initThreeJS();
   initAnimations();
+  initEntranceSound();
   
   // Load listings button
   document.getElementById('load-listings-btn').addEventListener('click', loadListings);
