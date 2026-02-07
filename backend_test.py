@@ -286,6 +286,15 @@ class ClickEstateAPITester:
             403,  # Should get 403 (forbidden) not 404 (not found)
             data={"currentDescription": "Test description"}
         )
+        
+        # Test NEW analyze-image endpoint exists
+        success3, response3 = self.run_test(
+            "AI Analyze Image Endpoint Exists",
+            "POST",
+            "/api/ai/analyze-image",
+            403,  # Should get 403 (forbidden) not 404 (not found)
+            data={"imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8A"}
+        )
 
     def test_cors_headers(self):
         """Test CORS headers are present"""
