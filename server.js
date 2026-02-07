@@ -13,6 +13,7 @@ const { uploadBuffer } = require('./services/cloudinary');
 const { buildRealtorSummary, buildAdminSummary, buildDetailedAnalytics } = require('./services/analytics');
 const { initializeSocket, emitNewRequest, emitRequestUpdate, emitListingUpdate } = require('./services/websocket');
 const { sendViewingRequestNotification, sendStatusUpdateNotification } = require('./services/email');
+const { generatePropertyDescription, improvePropertyDescription } = require('./services/ai');
 
 assertSupabaseEnv();
 assertJwtSecret();
