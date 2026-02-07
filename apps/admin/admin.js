@@ -961,3 +961,5 @@ window.openResetModal = openResetModal;
 window.closeResetModal = closeResetModal;
 window.toggleAgencyStatus = toggleAgencyStatus;
 window.exportAgenciesCSV = exportAgenciesCSV;
+window.updateApplicationStatus = updateApplicationStatus;
+window.viewApplication = viewApplication;
