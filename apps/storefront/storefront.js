@@ -759,44 +759,61 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==================== Entrance Sound Effect ====================
 function initEntranceSound() {
   const sound = document.getElementById('entrance-sound');
-  if (!sound) return;
+  const video = document.getElementById('hero-video');
+  if (!sound || !video) return;
   
   // Set volume (adjust as needed - 0.0 to 1.0)
   sound.volume = 0.4;
   
-  // Function to play sound once
-  const playEntranceSound = () => {
+  // Function to play sound and video together
+  const playEntranceMedia = () => {
     if (entranceSoundPlayed) return;
     entranceSoundPlayed = true;
     
-    sound.play().catch(err => {
-      console.log('Audio autoplay prevented:', err.message);
-    });
+    // Play both sound and video simultaneously
+    Promise.all([
+      sound.play().catch(err => console.log('Audio play prevented:', err.message)),
+      video.play().catch(err => console.log('Video play prevented:', err.message))
+    ]);
+    
+    // Add a cinematic fade-in effect to the video
+    gsap.fromTo(video, 
+      { opacity: 0.3 }, 
+      { opacity: 1, duration: 2, ease: 'power2.out' }
+    );
     
     // Remove listeners after first play
-    document.removeEventListener('click', playEntranceSound);
-    document.removeEventListener('scroll', playEntranceSound);
-    document.removeEventListener('touchstart', playEntranceSound);
-    document.removeEventListener('mousemove', playEntranceSoundOnMove);
+    document.removeEventListener('click', playEntranceMedia);
+    document.removeEventListener('scroll', playEntranceMedia);
+    document.removeEventListener('touchstart', playEntranceMedia);
+    document.removeEventListener('mousemove', playEntranceMediaOnMove);
   };
   
   // Play on mouse move (with delay to feel natural)
   let moveTimeout;
-  const playEntranceSoundOnMove = () => {
+  const playEntranceMediaOnMove = () => {
     if (entranceSoundPlayed) return;
     clearTimeout(moveTimeout);
-    moveTimeout = setTimeout(playEntranceSound, 500);
+    moveTimeout = setTimeout(playEntranceMedia, 300);
   };
   
   // Try to play immediately (works if user has interacted before)
-  sound.play().then(() => {
+  Promise.all([
+    sound.play(),
+    video.play()
+  ]).then(() => {
     entranceSoundPlayed = true;
+    gsap.fromTo(video, { opacity: 0.3 }, { opacity: 1, duration: 2, ease: 'power2.out' });
   }).catch(() => {
     // Autoplay blocked - wait for user interaction
-    document.addEventListener('click', playEntranceSound, { once: true });
-    document.addEventListener('scroll', playEntranceSound, { once: true });
-    document.addEventListener('touchstart', playEntranceSound, { once: true });
-    document.addEventListener('mousemove', playEntranceSoundOnMove);
+    // Set video to paused state with low opacity until interaction
+    video.pause();
+    gsap.set(video, { opacity: 0.3 });
+    
+    document.addEventListener('click', playEntranceMedia, { once: true });
+    document.addEventListener('scroll', playEntranceMedia, { once: true });
+    document.addEventListener('touchstart', playEntranceMedia, { once: true });
+    document.addEventListener('mousemove', playEntranceMediaOnMove);
   });
 }
 
