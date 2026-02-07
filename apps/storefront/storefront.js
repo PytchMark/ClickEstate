@@ -6,6 +6,7 @@ let currentGalleryIndex = 0;
 let currentGalleryImages = [];
 let lenis = null;
 let mortgageTerm = 30;
+let entranceSoundPlayed = false;
 
 // Testimonials data
 const testimonials = [
