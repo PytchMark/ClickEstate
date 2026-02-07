@@ -1,16 +1,204 @@
-:root{--bg:#0a0a0a;--panel:#121212;--text:#f6f6f6;--muted:#9b9b9b;--accent:#ff3b30;--border:rgba(255,255,255,.1)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top right,#1e1e1e,#050505);color:var(--text)}
-.texture::before{content:'';position:fixed;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.03),transparent);background-size:200% 200%;animation:shimmer 12s linear infinite;pointer-events:none}
-@keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
-.card{background:rgba(18,18,18,.85);border:1px solid var(--border);border-radius:14px;padding:16px;backdrop-filter:blur(8px)}
-.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;transition:.2s transform,.2s filter}.btn:hover{transform:translateY(-2px)}
-.btn:active{transform:translateY(0) scale(.98)}.btn-primary{background:var(--accent);color:#fff;position:relative;overflow:hidden}
-.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.25),transparent 75%);transform:translateX(-130%)}
-.btn-primary:hover::after{transition:600ms;transform:translateX(130%)}
-.input,select,textarea{width:100%;background:#0f0f0f;color:#fff;border:1px solid #2c2c2c;border-radius:10px;padding:10px}
-.grid{display:grid;gap:14px}.muted{color:var(--muted)}
-.skeleton{border-radius:8px;background:linear-gradient(90deg,#1b1b1b,#2a2a2a,#1b1b1b);background-size:200% 100%;animation:load 1.3s infinite}
-@keyframes load{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.sidebar{padding:18px;border-right:1px solid var(--border);background:#0b0b0b}
-.nav-item{display:block;padding:10px 12px;border-radius:8px;color:#fff;text-decoration:none;margin-bottom:8px}.nav-item.active,.nav-item:hover{background:#1b1b1b}
-.main{padding:22px}.hidden{display:none!important}
+/* ==================== CSS Variables ==================== */
+:root {
+  --bg: #050505;
+  --panel: #121212;
+  --text: #f6f6f6;
+  --muted: #a1a1aa;
+  --accent: #ff3b30;
+  --accent-hover: #d63026;
+  --border: #262626;
+  --success: #00c853;
+  --error: #ff3b30;
+}
+
+/* ==================== Reset & Base ==================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Satoshi', 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==================== Typography ==================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Clash Display', 'Inter', sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==================== Utilities ==================== */
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ==================== Base Card ==================== */
+.card {
+  background: rgba(18, 18, 18, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+}
+
+/* ==================== Buttons ==================== */
+.btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s, background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 25%, rgba(255, 255, 255, 0.25), transparent 75%);
+  transform: translateX(-130%);
+}
+
+.btn-primary:hover::after {
+  transition: 600ms;
+  transform: translateX(130%);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ==================== Form Inputs ==================== */
+.input,
+select,
+textarea {
+  width: 100%;
+  background: #0f0f0f;
+  color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.input::placeholder,
+textarea::placeholder {
+  color: #666;
+}
+
+/* ==================== Grid Layout ==================== */
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+/* ==================== Loading Skeleton ==================== */
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, #1b1b1b, #2a2a2a, #1b1b1b);
+  background-size: 200% 100%;
+  animation: skeleton-load 1.3s infinite;
+}
+
+@keyframes skeleton-load {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==================== App Shell Layout ==================== */
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  padding: 18px;
+  border-right: 1px solid var(--border);
+  background: #0b0b0b;
+  position: fixed;
+  height: 100vh;
+  width: 240px;
+}
+
+.nav-item {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  background: #1b1b1b;
+}
+
+.main {
+  padding: 22px;
+  margin-left: 240px;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 1024px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .main {
+    margin-left: 0;
+  }
+}
