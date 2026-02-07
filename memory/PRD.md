@@ -3,7 +3,7 @@
 ## Project Overview
 **Name:** ClickEstate — Powered by Pytch Marketing LLC  
 **Type:** Multi-tenant Real Estate SaaS Platform  
-**Version:** 2.0.0  
+**Version:** 2.1.0  
 **Last Updated:** 2026-02-07
 
 ## Problem Statement
@@ -17,6 +17,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 2. **Real Estate Agents** - Manage listings, track leads, upload media, respond to requests
 3. **Agency Admins** - Oversee agency realtors and listings
 4. **Platform Admins** - Manage all agencies/realtors, view platform metrics
+5. **Prospective Realtors** - Apply to join the platform as a realtor
 
 ## Core Requirements (Static)
 - Multi-tenant architecture with agency/realtor isolation
@@ -36,6 +37,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 | Database | Supabase (PostgreSQL) |
 | Media | Cloudinary |
 | AI | GPT-4o via Emergent Universal Key |
+| Payments | Stripe |
 | Deployment | Docker, Google Cloud Run |
 
 ---
@@ -46,6 +48,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Premium video hero with parallax scrolling
 - [x] Three.js particle background effects
 - [x] GSAP scroll animations (fade-ins, slide-ins, staggered sequences)
+- [x] **Scroll animation fix** - Elements now stay visible after scrolling (toggleActions: 'play none none none')
 - [x] Lenis smooth scrolling
 - [x] Agency search by ID (supports up to 3 agencies)
 - [x] Property filtering (parish, type, beds, price)
@@ -59,6 +62,8 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Toast notifications
 - [x] **Running Testimonial Banner** (infinite scroll)
 - [x] **Interactive Mortgage Calculator** (sliders for price, downpayment, rate, term)
+- [x] **"Become A Realtor" navigation button** - Links to application section
+- [x] **Realtor Application Form** - Complete application form with fields for name, email, phone, experience, plan selection
 
 ### ✅ Realtor Portal Features
 - [x] Two-phase login (login screen → app shell)
@@ -100,6 +105,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] All listings view with filters
 - [x] All requests view with filters
 - [x] Real-time notifications
+- [x] **Realtor Applications Tab** - View and manage incoming realtor applications
 
 ### ✅ Backend Features
 - [x] Express server with all API routes
@@ -111,6 +117,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] **AI Description Generator** (OpenAI GPT-4o)
 - [x] **AI Image Tagging** (OpenAI GPT-4o Vision)
 - [x] **Stripe Payment Integration** (subscriptions)
+- [x] **Realtor Applications API** (POST /api/public/realtor-applications, GET/PATCH /api/admin/realtor-applications)
 - [x] Plan limit enforcement
 - [x] CORS, Helmet, Rate limiting
 - [x] Health endpoint
@@ -121,6 +128,31 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] SQL schema for Supabase
 - [x] .env.example with all variables
 - [x] Shared CSS and JS utilities
+- [x] Frontend proxy for K8s ingress routing
+
+---
+
+## Database Schema
+
+### New Table: realtor_applications
+```sql
+CREATE TABLE realtor_applications (
+  id SERIAL PRIMARY KEY,
+  application_id TEXT UNIQUE NOT NULL,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  agency_name TEXT,
+  experience TEXT NOT NULL,
+  interested_plan TEXT DEFAULT 'starter',
+  message TEXT,
+  status TEXT DEFAULT 'pending',
+  admin_notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP
+);
+```
 
 ---
 
@@ -133,6 +165,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [ ] Production deployment to Cloud Run
 
 ### P1 - High Priority
+- [ ] **AI-powered competitive analysis** to suggest listing prices for realtors
 - [ ] Password hashing (bcrypt)
 - [ ] Email verification for new accounts
 - [ ] Forgot password flow
@@ -141,6 +174,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [ ] Pinned scroll sections with storytelling
 
 ### P2 - Medium Priority
+- [ ] **AI image analysis** for auto-generating property tags from photos
 - [ ] Horizontal scrolling showcase sections
 - [ ] More 3D effects (parallax depth layers)
 - [ ] WhatsApp Business API integration
@@ -151,9 +185,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 
 ### P3 - Nice to Have
 - [ ] WebGL/Three.js property 3D models
-- [ ] AI property description generator
 - [ ] Market analytics dashboard
-- [ ] Mortgage calculator
 - [ ] Neighborhood insights
 - [ ] Multi-language support
 
@@ -161,12 +193,12 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 
 ## Next Tasks List
 1. Set up real Supabase project and configure credentials
-2. Set up real Cloudinary account and configure credentials
-3. Create seed data (test agencies, realtors, listings)
-4. Deploy to Cloud Run
-5. Add password hashing
-6. Add pinned scroll sections to storefront
-7. Add horizontal scrolling property showcase
+2. Create the realtor_applications table in Supabase
+3. Set up real Cloudinary account and configure credentials
+4. Create seed data (test agencies, realtors, listings)
+5. Deploy to Cloud Run
+6. Add password hashing
+7. Implement AI competitive analysis feature
 
 ---
 
@@ -174,3 +206,4 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - Video hero URL provided by user: `https://res.cloudinary.com/dd8pjjxsm/video/upload/v1770419902/...`
 - User chose GSAP for animations, CSS+Three.js for 3D effects
 - All features requested: real-time notifications, analytics, email, comparison, virtual tour, SEO
+- **CDN Caching**: Preview environment may cache static files. Changes may take time to propagate to external URLs.
