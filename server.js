@@ -34,11 +34,23 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '5mb' }));
 app.use(rateLimit({ windowMs: 60 * 1000, limit: 200 }));
 
-app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
-app.use('/storefront', express.static(path.join(__dirname, 'apps/storefront')));
-app.use('/realtor/signup', express.static(path.join(__dirname, 'apps/signup')));
-app.use('/realtor', express.static(path.join(__dirname, 'apps/realtor')));
-app.use('/admin', express.static(path.join(__dirname, 'apps/admin')));
+// Static file options with no caching for development
+const staticOptions = {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+  }
+};
+
+app.use('/assets', express.static(path.join(__dirname, 'public/assets'), staticOptions));
+app.use('/storefront', express.static(path.join(__dirname, 'apps/storefront'), staticOptions));
+app.use('/realtor/signup', express.static(path.join(__dirname, 'apps/signup'), staticOptions));
+app.use('/realtor', express.static(path.join(__dirname, 'apps/realtor'), staticOptions));
+app.use('/admin', express.static(path.join(__dirname, 'apps/admin'), staticOptions));
 app.get('/', (_, res) => res.redirect('/storefront'));
 app.get('/health', (_, res) => res.json({ ok: true, service: 'clickestate', timestamp: new Date().toISOString() }));
 
