@@ -109,6 +109,8 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] WebSocket (Socket.io) for real-time events
 - [x] Email notifications (Nodemailer)
 - [x] **AI Description Generator** (OpenAI GPT-4o)
+- [x] **AI Image Tagging** (OpenAI GPT-4o Vision)
+- [x] **Stripe Payment Integration** (subscriptions)
 - [x] Plan limit enforcement
 - [x] CORS, Helmet, Rate limiting
 - [x] Health endpoint
