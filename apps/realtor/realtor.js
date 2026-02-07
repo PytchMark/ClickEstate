@@ -1046,6 +1046,59 @@ function showToast(message, type = 'success') {
 // ==================== Initialize ====================
 document.addEventListener('DOMContentLoaded', init);
 
+// ==================== AI Description Generator ====================
+async function generateAIDescription() {
+  const aiLoading = document.getElementById('ai-loading');
+  const descriptionField = document.getElementById('form-description');
+  
+  // Gather property details from form
+  const propertyDetails = {
+    title: document.getElementById('form-title').value,
+    property_type: document.getElementById('form-type').value,
+    price: document.getElementById('form-price').value,
+    address: document.getElementById('form-address').value,
+    parish: document.getElementById('form-parish').value,
+    community: document.getElementById('form-community').value,
+    bedrooms: document.getElementById('form-beds').value,
+    bathrooms: document.getElementById('form-baths').value,
+    sqft: document.getElementById('form-sqft').value,
+    features: document.getElementById('form-features').value
+  };
+  
+  // Check if we have minimum details
+  if (!propertyDetails.title && !propertyDetails.property_type) {
+    showToast('Please add a title or property type first', 'error');
+    return;
+  }
+  
+  // Show loading state
+  aiLoading.classList.remove('hidden');
+  
+  try {
+    const data = await Api.request('/api/ai/generate-description', {
+      method: 'POST',
+      body: JSON.stringify(propertyDetails)
+    });
+    
+    if (data.ok && data.description) {
+      descriptionField.value = data.description;
+      showToast('Description generated!', 'success');
+      
+      // Animate the textarea to draw attention
+      gsap.fromTo(descriptionField, 
+        { borderColor: '#ff3b30' }, 
+        { borderColor: '#262626', duration: 2 }
+      );
+    } else {
+      showToast(data.error || 'Failed to generate description', 'error');
+    }
+  } catch (error) {
+    showToast(error.message || 'AI service unavailable', 'error');
+  } finally {
+    aiLoading.classList.add('hidden');
+  }
+}
+
 // Global functions
 window.openListingDrawer = openListingDrawer;
 window.closeDrawer = closeDrawer;
