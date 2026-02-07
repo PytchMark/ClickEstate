@@ -858,3 +858,51 @@ window.nextGalleryImage = nextGalleryImage;
 window.prevGalleryImage = prevGalleryImage;
 window.goToGalleryImage = goToGalleryImage;
 window.setLoanTerm = setLoanTerm;
+
+// ==================== Realtor Application ====================
+function initRealtorApplication() {
+  const form = document.getElementById('realtor-application-form');
+  if (!form) return;
+  
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Submitting...';
+    submitBtn.disabled = true;
+    
+    const payload = {
+      first_name: document.getElementById('app-first-name').value,
+      last_name: document.getElementById('app-last-name').value,
+      email: document.getElementById('app-email').value,
+      phone: document.getElementById('app-phone').value,
+      agency_name: document.getElementById('app-agency').value || null,
+      experience: document.getElementById('app-experience').value,
+      interested_plan: document.getElementById('app-plan').value,
+      message: document.getElementById('app-message').value || null
+    };
+    
+    try {
+      await Api.request('/api/public/realtor-applications', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      
+      showToast('Application submitted successfully! We\'ll contact you soon.', 'success');
+      form.reset();
+      
+      // Scroll to top of form or show success message
+      gsap.to('#become-realtor', { 
+        scrollTo: { y: 0 }, 
+        duration: 0.5 
+      });
+      
+    } catch (error) {
+      showToast(error.message || 'Failed to submit application', 'error');
+    } finally {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
+  });
+}
