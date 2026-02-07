@@ -32,9 +32,10 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 | Component | Technology |
 |-----------|------------|
 | Frontend | HTML/CSS/JS, Tailwind (CDN), GSAP, Three.js, Chart.js |
-| Backend | Node.js, Express.js, Socket.io, Nodemailer |
+| Backend | Node.js, Express.js, Socket.io, Nodemailer, OpenAI SDK |
 | Database | Supabase (PostgreSQL) |
 | Media | Cloudinary |
+| AI | GPT-4o via Emergent Universal Key |
 | Deployment | Docker, Google Cloud Run |
 
 ---
