@@ -749,6 +749,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize mortgage calculator
   initMortgageCalculator();
+  
+  // Initialize realtor application form
+  initRealtorApplication();
 });
 
 // ==================== Testimonials Banner ====================
