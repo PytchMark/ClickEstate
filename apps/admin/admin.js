@@ -134,6 +134,9 @@ async function loadTab(tab) {
         case 'requests':
           await loadRequests();
           break;
+        case 'applications':
+          await loadApplications();
+          break;
       }
       
       gsap.to(content, { opacity: 1, duration: 0.3 });
