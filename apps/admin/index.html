@@ -1,10 +1,236 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>ClickEstate Admin</title><link rel='stylesheet' href='/assets/css/shared.css'><link rel='stylesheet' href='/admin/admin.css'></head>
-<body class='texture'>
-<section id='login' class='login-wrap'><div class='card login-card'><h1>Platform Admin</h1><input id='adminUser' class='input' placeholder='Username or email'><input id='adminPass' class='input' type='password' placeholder='Password'><button id='adminLogin' class='btn btn-primary'>Login</button></div></section>
-<section id='dash' class='hidden'><div class='main'><h2>Admin Dashboard</h2><div id='summary' class='grid kpis'></div>
-<div class='card'><div style='display:flex;gap:8px'><input id='search' class='input' placeholder='Search agencies'><button id='loadAgencies' class='btn'>Search</button><button id='exportCsv' class='btn'>Export CSV</button></div><div id='agencies'></div></div>
-<div class='grid two'><div class='card'><h3>Create Agency + Realtor</h3><input id='cAgency' class='input' placeholder='AGY-1001'><input id='cRealtor' class='input' placeholder='REA-1001'><input id='cEmail' class='input' placeholder='email'><input id='cPass' class='input' placeholder='password'><button id='createAgency' class='btn btn-primary'>Create</button></div>
-<div class='card'><h3>Reset Password</h3><input id='rAgency' class='input' placeholder='agency id'><input id='rRealtor' class='input' placeholder='realtor id'><input id='rPass' class='input' placeholder='new password'><button id='resetPass' class='btn'>Reset</button></div></div>
-</div></section>
-<script src='/assets/js/api.js'></script><script src='/assets/js/ui.js'></script><script src='/admin/admin.js'></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClickEstate | Admin Portal</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ff3b30',
+            surface: '#121212',
+            border: '#262626'
+          },
+          fontFamily: {
+            clash: ['Clash Display', 'sans-serif'],
+            satoshi: ['Satoshi', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Socket.io Client -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="bg-[#050505] text-white font-satoshi">
+  
+  <!-- Login View -->
+  <section id="login-view" class="min-h-screen flex items-center justify-center p-4" data-testid="admin-login-view">
+    <div class="login-card w-full max-w-md">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div class="relative bg-[#0a0a0a] border border-[#262626] rounded-2xl p-8 md:p-10">
+        <div class="text-center mb-8">
+          <h1 class="font-clash font-bold text-3xl mb-2">
+            Click<span class="text-primary">Estate</span>
+          </h1>
+          <p class="text-[#a1a1aa]">Platform Admin</p>
+        </div>
+        
+        <form id="login-form" class="space-y-5">
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-2 block">Username</label>
+            <div class="relative">
+              <i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-[#666]"></i>
+              <input 
+                type="text" 
+                id="admin-user" 
+                required
+                class="w-full bg-[#121212] border border-[#262626] rounded-lg pl-12 pr-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                data-testid="admin-user"
+              >
+            </div>
+          </div>
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-2 block">Password</label>
+            <div class="relative">
+              <i class="ph ph-lock absolute left-4 top-1/2 -translate-y-1/2 text-[#666]"></i>
+              <input 
+                type="password" 
+                id="admin-pass" 
+                required
+                class="w-full bg-[#121212] border border-[#262626] rounded-lg pl-12 pr-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                data-testid="admin-pass"
+              >
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="w-full bg-primary text-white py-4 rounded-lg font-medium uppercase tracking-wider hover:bg-[#d63026] transition-all duration-300"
+            data-testid="admin-login-submit"
+          >
+            Sign In
+          </button>
+        </form>
+        
+        <p class="text-center text-[#666] text-sm mt-6">
+          Powered by Pytch Marketing LLC
+        </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Dashboard View -->
+  <section id="dashboard-view" class="hidden" data-testid="admin-dashboard-view">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 bg-[#050505]/90 backdrop-blur-xl border-b border-[#262626] z-50" data-testid="admin-header">
+      <div class="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-8">
+          <a href="/admin" class="font-clash font-bold text-xl">
+            Click<span class="text-primary">Estate</span>
+            <span class="text-[#666] text-sm font-satoshi font-normal ml-2">Admin</span>
+          </a>
+          <nav class="hidden md:flex items-center gap-6">
+            <a href="#" data-tab="overview" class="admin-nav-item active" data-testid="nav-overview">Overview</a>
+            <a href="#" data-tab="agencies" class="admin-nav-item" data-testid="nav-agencies">Agencies</a>
+            <a href="#" data-tab="listings" class="admin-nav-item" data-testid="nav-listings">Listings</a>
+            <a href="#" data-tab="requests" class="admin-nav-item" data-testid="nav-requests">Requests</a>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <button id="notifications-btn" class="relative p-2 hover:bg-[#1a1a1a] rounded-lg" data-testid="admin-notifications-btn">
+            <i class="ph ph-bell text-xl"></i>
+            <span id="notification-dot" class="hidden absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+          </button>
+          <button id="logout-btn" class="p-2 hover:bg-[#1a1a1a] rounded-lg" data-testid="admin-logout-btn">
+            <i class="ph ph-sign-out text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Content -->
+    <main class="pt-20 min-h-screen">
+      <div id="content" class="max-w-[1600px] mx-auto px-6 py-8" data-testid="admin-content">
+        <!-- Content loaded dynamically -->
+      </div>
+    </main>
+  </section>
+  
+  <!-- Create Agency Modal -->
+  <div id="create-modal" class="fixed inset-0 z-50 hidden" data-testid="create-agency-modal">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm modal-backdrop"></div>
+    <div class="relative h-full flex items-center justify-center p-4">
+      <div class="bg-[#0a0a0a] border border-[#262626] rounded-2xl w-full max-w-lg p-8 modal-content">
+        <h2 class="font-clash font-bold text-2xl mb-6">Create Agency</h2>
+        <form id="create-form" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[#a1a1aa] text-sm mb-1 block">Agency ID *</label>
+              <input type="text" id="c-agency-id" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" placeholder="AGY-0001" data-testid="c-agency-id">
+            </div>
+            <div>
+              <label class="text-[#a1a1aa] text-sm mb-1 block">Realtor ID *</label>
+              <input type="text" id="c-realtor-id" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" placeholder="REA-0001" data-testid="c-realtor-id">
+            </div>
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Display Name *</label>
+            <input type="text" id="c-name" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="c-name">
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Email *</label>
+            <input type="email" id="c-email" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="c-email">
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Password *</label>
+            <input type="text" id="c-password" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="c-password">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[#a1a1aa] text-sm mb-1 block">Phone</label>
+              <input type="tel" id="c-phone" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="c-phone">
+            </div>
+            <div>
+              <label class="text-[#a1a1aa] text-sm mb-1 block">WhatsApp</label>
+              <input type="tel" id="c-whatsapp" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="c-whatsapp">
+            </div>
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Plan</label>
+            <select id="c-tier" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="c-tier">
+              <option value="starter">Starter</option>
+              <option value="pro">Pro</option>
+              <option value="unlimited">Unlimited</option>
+            </select>
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-medium uppercase tracking-wider hover:bg-[#d63026] transition-colors" data-testid="create-submit">Create</button>
+            <button type="button" onclick="closeCreateModal()" class="px-6 py-3 border border-[#262626] rounded-lg hover:bg-[#1a1a1a] transition-colors">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Reset Password Modal -->
+  <div id="reset-modal" class="fixed inset-0 z-50 hidden" data-testid="reset-password-modal">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm modal-backdrop"></div>
+    <div class="relative h-full flex items-center justify-center p-4">
+      <div class="bg-[#0a0a0a] border border-[#262626] rounded-2xl w-full max-w-md p-8 modal-content">
+        <h2 class="font-clash font-bold text-2xl mb-6">Reset Password</h2>
+        <form id="reset-form" class="space-y-4">
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Agency ID</label>
+            <input type="text" id="r-agency-id" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="r-agency-id">
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Realtor ID</label>
+            <input type="text" id="r-realtor-id" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="r-realtor-id">
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">New Password *</label>
+            <input type="text" id="r-password" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="r-password">
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-medium uppercase tracking-wider hover:bg-[#d63026] transition-colors" data-testid="reset-submit">Reset</button>
+            <button type="button" onclick="closeResetModal()" class="px-6 py-3 border border-[#262626] rounded-lg hover:bg-[#1a1a1a] transition-colors">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3" data-testid="toast-container"></div>
+  
+  <!-- Scripts -->
+  <script src="/assets/js/api.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
