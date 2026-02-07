@@ -57,6 +57,8 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Trust badges and SEO meta tags
 - [x] Mobile responsive design
 - [x] Toast notifications
+- [x] **Running Testimonial Banner** (infinite scroll)
+- [x] **Interactive Mortgage Calculator** (sliders for price, downpayment, rate, term)
 
 ### ✅ Realtor Portal Features
 - [x] Two-phase login (login screen → app shell)
