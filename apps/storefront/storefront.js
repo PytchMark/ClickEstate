@@ -660,6 +660,7 @@ function updateCompareTable() {
 
 // ==================== Event Listeners ====================
 document.addEventListener('DOMContentLoaded', () => {
+  initLenis();
   initThreeJS();
   initAnimations();
   
