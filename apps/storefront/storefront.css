@@ -1,4 +1,546 @@
-.hero{height:52vh;position:relative;display:flex;align-items:end;padding:24px}.hero-video,.overlay{position:absolute;inset:0}.hero-video{width:100%;height:100%;object-fit:cover}.overlay{background:linear-gradient(to top,#050505 15%,rgba(5,5,5,.35))}.hero-content{position:relative;max-width:700px}
-.search-bar{display:flex;gap:10px}.cards{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:14px}.listing-card img{width:100%;height:160px;object-fit:cover;border-radius:10px}.tag{background:#2a1010;color:#ff9d98;padding:3px 8px;border-radius:999px;font-size:12px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:grid;place-items:center}.modal-body{max-width:720px;width:95%}.fgrid{grid-template-columns:repeat(4,1fr)}
-@media (max-width:800px){.fgrid,.search-bar{grid-template-columns:1fr;display:grid}}
+/* ==================== Base Styles ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+/* ==================== Noise Overlay ==================== */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ==================== Three.js Canvas ==================== */
+#three-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* ==================== Navigation ==================== */
+.nav-blur {
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+  transition: all 0.3s ease;
+}
+
+.nav-blur.scrolled {
+  background: rgba(5, 5, 5, 0.95);
+}
+
+/* ==================== Hero Section ==================== */
+.hero-section {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+  will-change: transform;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.5);
+  z-index: -1;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #050505 0%, transparent 40%, transparent 60%, rgba(5, 5, 5, 0.3) 100%);
+  z-index: -1;
+}
+
+/* ==================== Animations ==================== */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 59, 48, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(255, 59, 48, 0.5); }
+}
+
+.scroll-indicator {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* ==================== Property Cards ==================== */
+.property-card {
+  background: #121212;
+  border: 1px solid #262626;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.property-card:hover {
+  border-color: #ff3b30;
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 59, 48, 0.1);
+}
+
+.property-card-image {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+
+.property-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.property-card:hover .property-card-image img {
+  transform: scale(1.08);
+}
+
+.property-card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #121212 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.property-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff3b30;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+}
+
+.property-tag.new {
+  background: #00c853;
+}
+
+.property-compare-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(18, 18, 18, 0.9);
+  border: 1px solid #262626;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.property-compare-btn:hover {
+  background: #ff3b30;
+  border-color: #ff3b30;
+}
+
+.property-compare-btn.added {
+  background: #ff3b30;
+  border-color: #ff3b30;
+}
+
+.property-card-content {
+  padding: 20px;
+}
+
+.property-price {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.property-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.property-location {
+  color: #a1a1aa;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.property-stats {
+  display: flex;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #262626;
+}
+
+.property-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a1a1aa;
+  font-size: 0.875rem;
+}
+
+.property-stat i {
+  color: #ff3b30;
+}
+
+/* ==================== Skeleton Loading ==================== */
+.skeleton-card {
+  background: #121212;
+  border: 1px solid #262626;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 400px;
+}
+
+.skeleton-card::before {
+  content: '';
+  display: block;
+  height: 240px;
+  background: linear-gradient(90deg, #1a1a1a 0%, #262626 50%, #1a1a1a 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-card::after {
+  content: '';
+  display: block;
+  margin: 20px;
+  height: 100px;
+  background: linear-gradient(90deg, #1a1a1a 0%, #262626 50%, #1a1a1a 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==================== Compare Section ==================== */
+.compare-slot-filled {
+  position: relative;
+  height: 12rem;
+  background: #121212;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.compare-slot-filled img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compare-slot-filled .remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.compare-slot-filled .remove-btn:hover {
+  background: #ff3b30;
+}
+
+.compare-slot-filled .slot-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: linear-gradient(to top, #121212 0%, transparent 100%);
+}
+
+/* ==================== Modal Styles ==================== */
+.modal-backdrop,
+.request-backdrop {
+  cursor: pointer;
+}
+
+.modal-content,
+.request-content {
+  animation: modal-enter 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Image Gallery in Modal */
+.modal-gallery {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.modal-gallery-main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-gallery-nav {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.modal-gallery-dot {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-gallery-dot.active {
+  background: #ff3b30;
+  width: 24px;
+  border-radius: 4px;
+}
+
+.modal-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-gallery-arrow:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.modal-gallery-arrow.prev {
+  left: 16px;
+}
+
+.modal-gallery-arrow.next {
+  right: 16px;
+}
+
+/* ==================== Toast Notifications ==================== */
+.toast {
+  background: #121212;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: toast-enter 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  min-width: 300px;
+}
+
+.toast.success {
+  border-color: #00c853;
+}
+
+.toast.error {
+  border-color: #ff3b30;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast.success .toast-icon {
+  background: rgba(0, 200, 83, 0.2);
+  color: #00c853;
+}
+
+.toast.error .toast-icon {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* ==================== Reveal Animations ==================== */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* ==================== Virtual Tour Badge ==================== */
+.virtual-tour-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.virtual-tour-badge i {
+  color: #ff3b30;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 100svh;
+  }
+  
+  .property-card-image {
+    height: 200px;
+  }
+  
+  .modal-gallery {
+    height: 280px;
+  }
+  
+  .property-stats {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+/* ==================== Custom Scrollbar ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
