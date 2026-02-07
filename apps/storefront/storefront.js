@@ -853,3 +853,4 @@ window.openRequestModal = openRequestModal;
 window.nextGalleryImage = nextGalleryImage;
 window.prevGalleryImage = prevGalleryImage;
 window.goToGalleryImage = goToGalleryImage;
+window.setLoanTerm = setLoanTerm;
