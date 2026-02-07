@@ -426,6 +426,132 @@
     </div>
   </section>
   
+  <!-- Become a Realtor Section -->
+  <section id="become-realtor" class="py-20 bg-[#0a0a0a] border-t border-[#262626]" data-testid="become-realtor-section">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <!-- Left Content -->
+        <div>
+          <p class="text-primary uppercase tracking-[0.3em] text-sm mb-4 reveal-up">Join Our Network</p>
+          <h2 class="font-clash font-bold text-4xl md:text-5xl mb-6 reveal-up">Become A <span class="text-primary">Realtor</span></h2>
+          <p class="text-[#a1a1aa] text-lg mb-8 reveal-up">Join ClickEstate's premier network of real estate professionals. Get access to powerful tools, premium listings, and connect with qualified buyers.</p>
+          
+          <div class="space-y-6 reveal-up">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <i class="ph ph-house-line text-primary text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-clash font-semibold text-lg mb-1">Premium Listings</h4>
+                <p class="text-[#a1a1aa]">Showcase your properties with stunning galleries and video tours</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <i class="ph ph-chart-line-up text-primary text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-clash font-semibold text-lg mb-1">Lead Generation</h4>
+                <p class="text-[#a1a1aa]">Receive qualified buyer leads directly to your dashboard</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <i class="ph ph-robot text-primary text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-clash font-semibold text-lg mb-1">AI-Powered Tools</h4>
+                <p class="text-[#a1a1aa]">Generate compelling property descriptions with AI assistance</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <i class="ph ph-crown text-primary text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-clash font-semibold text-lg mb-1">Flexible Plans</h4>
+                <p class="text-[#a1a1aa]">Choose from Starter, Pro, or Unlimited plans to fit your needs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Application Form -->
+        <div class="reveal-up">
+          <div class="bg-[#121212] border border-[#262626] rounded-2xl p-8">
+            <h3 class="font-clash font-semibold text-xl mb-6 text-center">Apply to Join ClickEstate</h3>
+            
+            <form id="realtor-application-form" class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="text-[#a1a1aa] text-sm mb-1 block">First Name *</label>
+                  <input type="text" id="app-first-name" required class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-first-name">
+                </div>
+                <div>
+                  <label class="text-[#a1a1aa] text-sm mb-1 block">Last Name *</label>
+                  <input type="text" id="app-last-name" required class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-last-name">
+                </div>
+              </div>
+              
+              <div>
+                <label class="text-[#a1a1aa] text-sm mb-1 block">Email Address *</label>
+                <input type="email" id="app-email" required class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-email">
+              </div>
+              
+              <div>
+                <label class="text-[#a1a1aa] text-sm mb-1 block">Phone Number *</label>
+                <input type="tel" id="app-phone" required class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-phone">
+              </div>
+              
+              <div>
+                <label class="text-[#a1a1aa] text-sm mb-1 block">Agency Name (if applicable)</label>
+                <input type="text" id="app-agency" class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-agency">
+              </div>
+              
+              <div>
+                <label class="text-[#a1a1aa] text-sm mb-1 block">Years of Experience *</label>
+                <select id="app-experience" required class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-experience">
+                  <option value="">Select experience</option>
+                  <option value="0-1">Less than 1 year</option>
+                  <option value="1-3">1-3 years</option>
+                  <option value="3-5">3-5 years</option>
+                  <option value="5-10">5-10 years</option>
+                  <option value="10+">10+ years</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="text-[#a1a1aa] text-sm mb-1 block">Interested Plan</label>
+                <select id="app-plan" class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="app-plan">
+                  <option value="starter">Starter - $29/month</option>
+                  <option value="pro">Pro - $79/month</option>
+                  <option value="unlimited">Unlimited - $149/month</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="text-[#a1a1aa] text-sm mb-1 block">Tell us about yourself</label>
+                <textarea id="app-message" rows="3" class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none resize-none" placeholder="Share your background and why you'd like to join..." data-testid="app-message"></textarea>
+              </div>
+              
+              <button type="submit" class="w-full bg-primary text-white py-4 rounded-lg font-medium uppercase tracking-wider hover:bg-[#d63026] transition-colors flex items-center justify-center gap-2" data-testid="app-submit">
+                <i class="ph ph-paper-plane-tilt"></i>
+                Submit Application
+              </button>
+            </form>
+            
+            <p class="text-center text-[#666] text-sm mt-6">
+              Already registered? <a href="/realtor" class="text-primary hover:underline">Sign in here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
   <!-- Footer -->
   <footer class="py-16 border-t border-[#262626]" data-testid="footer">
     <div class="max-w-[1600px] mx-auto px-6 md:px-12">
