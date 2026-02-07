@@ -319,6 +319,34 @@ app.post('/api/media/delete', requireAuth, requireRealtor, async (req, res) => {
   } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
 });
 
+// ==================== AI DESCRIPTION GENERATOR ====================
+
+// Generate AI property description
+app.post('/api/ai/generate-description', requireAuth, requireRealtor, async (req, res) => {
+  try {
+    const result = await generatePropertyDescription(req.body);
+    if (!result.ok) {
+      return res.status(500).json({ ok: false, error: result.error });
+    }
+    return res.json({ ok: true, description: result.description });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// Improve existing description
+app.post('/api/ai/improve-description', requireAuth, requireRealtor, async (req, res) => {
+  try {
+    const { currentDescription, instructions } = req.body;
+    if (!currentDescription) {
+      return res.status(400).json({ ok: false, error: 'currentDescription is required' });
+    }
+    const result = await improvePropertyDescription(currentDescription, instructions);
+    if (!result.ok) {
+      return res.status(500).json({ ok: false, error: result.error });
+    }
+    return res.json({ ok: true, description: result.description });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
 app.get('/api/realtor/requests', requireAuth, requireRealtor, async (req, res) => {
   try {
     let query = `?agency_id=eq.${req.user.agency_id}`;
