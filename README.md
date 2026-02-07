@@ -1,156 +1,294 @@
 # ClickEstate — Powered by Pytch Marketing LLC
 
-ClickEstate is a multi-tenant real estate SaaS: premium storefront + realtor operating system + platform admin console.
+> Premium Real Estate SaaS Platform: Digital Storefront + Lead Engine + Agent Portal
 
-## What is included (v1)
-- **Public Storefront** (`/storefront`): search listings by agency IDs (up to 3), view listing cards/details, submit viewing requests.
-- **Realtor Portal** (`/realtor`): two-phase login, SaaS shell (sidebar + content), manage listings/media, pipeline/request updates, KPI summary.
-- **Admin Portal** (`/admin`): env-based admin login, summary metrics, agency/realtor creation, reset password, search/filter/pagination-friendly APIs.
-- **API + Security**: Express routes, JWT auth, role middlewares, CORS from env, helmet, morgan logs, rate limit, `/health` endpoint.
-- **Cloudinary**: server-side media upload route and plan-limit enforcement.
-- **Cloud Run ready**: Dockerfile and environment-driven configuration.
+![ClickEstate](https://img.shields.io/badge/version-2.0.0-ff3b30) ![Node](https://img.shields.io/badge/node-%3E%3D18-green) ![License](https://img.shields.io/badge/license-MIT-blue)
 
-## Local development
-1. Copy envs:
-   ```bash
-   cp .env.example .env
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start server:
-   ```bash
-   npm start
-   ```
-4. Open apps:
-   - http://localhost:8080/storefront
-   - http://localhost:8080/realtor
-   - http://localhost:8080/admin
+## Overview
 
-## Required environment variables
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `JWT_SECRET` (**mandatory**; server refuses boot if missing)
-- `ADMIN_EMAIL` or `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
-- `ADMIN_API_KEY` (optional bypass header)
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-- `CLOUDINARY_FOLDER` (optional template: `clickestate/agencies/{agencyId}/listings/{listingId}`)
-- `CORS_ORIGINS` (comma-separated)
+ClickEstate is a production-grade, multi-tenant real estate SaaS platform designed for realtors and agencies. It provides:
 
-## Supabase SQL schema (copy/paste)
-```sql
-create extension if not exists pgcrypto;
+- **Public Storefront** (`/storefront`): Premium property browsing experience with GSAP animations, Three.js effects, property comparison, and instant viewing requests
+- **Realtor Portal** (`/realtor`): Full-featured agent dashboard with real-time notifications, analytics charts, listings management, and lead pipeline
+- **Admin Portal** (`/admin`): Platform administration for managing agencies, users, and viewing platform-wide metrics
 
-create table if not exists public.profiles (
-  id uuid primary key default gen_random_uuid(),
-  role text not null check (role in ('realtor','agency_admin','platform_admin')) default 'realtor',
-  agency_id text not null,
-  realtor_id text not null,
-  profile_email text,
-  password text,
-  display_name text,
-  phone text,
-  whatsapp text,
-  status text not null check (status in ('active','paused')) default 'active',
-  branding_tier text not null check (branding_tier in ('starter','pro','unlimited','standard','custom_brand')) default 'starter',
-  logo_url text,
-  primary_color text default '#ff3b30',
-  created_at timestamptz default now(),
-  unique(agency_id, realtor_id)
-);
+## Features
 
-create table if not exists public.listings (
-  id uuid primary key default gen_random_uuid(),
-  listing_id text unique,
-  agency_id text not null,
-  realtor_id text not null,
-  title text,
-  address text,
-  parish text,
-  community text,
-  price numeric,
-  property_type text,
-  bedrooms int,
-  bathrooms int,
-  sqft int,
-  lot_size text,
-  status text not null check (status in ('available','under_offer','sold','archived')) default 'available',
-  description text,
-  features text,
-  image_urls text,
-  video_url text,
-  featured boolean default false,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
+### 🏠 Storefront
+- Video hero with parallax scrolling
+- Three.js particle background effects
+- GSAP scroll animations and reveals
+- Property comparison tool (up to 4 properties)
+- Advanced filtering (parish, type, beds, price)
+- Image gallery with keyboard navigation
+- Viewing request forms with multiple types
+- WhatsApp integration
+- Mobile-responsive design
+- SEO optimized
 
-create table if not exists public.viewing_requests (
-  id uuid primary key default gen_random_uuid(),
-  request_id text unique,
-  agency_id text not null,
-  realtor_id text not null,
-  listing_id text,
-  customer_name text not null,
-  customer_phone text not null,
-  customer_email text,
-  request_type text not null check (request_type in ('whatsapp','live_video','walk_in','call')) default 'whatsapp',
-  status text not null check (status in ('new','contacted','booked','closed','no_show')) default 'new',
-  preferred_date text,
-  preferred_time text,
-  notes text,
-  source text default 'storefront',
-  created_at timestamptz default now()
-);
+### 👤 Realtor Portal
+- Real-time WebSocket notifications
+- Interactive analytics dashboard with Chart.js
+- Listings CRUD with media upload
+- Drag-and-drop image/video uploads to Cloudinary
+- Lead pipeline (Kanban view)
+- Request status management
+- Profile settings
+- Plan-based limits enforcement
 
-create table if not exists public.listing_media (
-  id uuid primary key default gen_random_uuid(),
-  listing_id text not null,
-  media_url text not null,
-  media_type text check (media_type in ('image','video')),
-  created_at timestamptz default now()
-);
+### 🔧 Admin Portal
+- Platform-wide analytics
+- Agency/realtor management
+- Bulk actions and CSV export
+- Password reset functionality
+- Real-time activity monitoring
 
-create index if not exists idx_profiles_agency_id on public.profiles(agency_id);
-create index if not exists idx_profiles_realtor_id on public.profiles(realtor_id);
-create index if not exists idx_profiles_status on public.profiles(status);
-create index if not exists idx_profiles_created_at on public.profiles(created_at);
+## Tech Stack
 
-create index if not exists idx_listings_agency_id on public.listings(agency_id);
-create index if not exists idx_listings_realtor_id on public.listings(realtor_id);
-create index if not exists idx_listings_status on public.listings(status);
-create index if not exists idx_listings_created_at on public.listings(created_at);
+| Component | Technology |
+|-----------|------------|
+| Frontend | Vanilla HTML/CSS/JS, Tailwind CSS (CDN), GSAP, Three.js, Chart.js |
+| Backend | Node.js, Express.js |
+| Database | Supabase (PostgreSQL) |
+| Media Storage | Cloudinary |
+| Real-time | Socket.io |
+| Email | Nodemailer |
+| Deployment | Docker, Google Cloud Run |
 
-create index if not exists idx_requests_agency_id on public.viewing_requests(agency_id);
-create index if not exists idx_requests_realtor_id on public.viewing_requests(realtor_id);
-create index if not exists idx_requests_status on public.viewing_requests(status);
-create index if not exists idx_requests_created_at on public.viewing_requests(created_at);
+## Project Structure
 
-alter table public.profiles disable row level security;
-alter table public.listings disable row level security;
-alter table public.viewing_requests disable row level security;
+```
+/
+├── server.js                 # Express server with all API routes
+├── package.json
+├── Dockerfile
+├── .env.example
+├── services/
+│   ├── supabase.js          # Database operations
+│   ├── auth.js              # JWT authentication
+│   ├── cloudinary.js        # Media upload
+│   ├── websocket.js         # Real-time notifications
+│   ├── email.js             # Email notifications
+│   └── analytics.js         # Analytics calculations
+├── apps/
+│   ├── storefront/          # Public storefront
+│   │   ├── index.html
+│   │   ├── storefront.js
+│   │   └── storefront.css
+│   ├── realtor/             # Realtor portal
+│   │   ├── index.html
+│   │   ├── realtor.js
+│   │   └── realtor.css
+│   └── admin/               # Admin portal
+│       ├── index.html
+│       ├── admin.js
+│       └── admin.css
+└── public/
+    └── assets/
+        ├── css/shared.css
+        └── js/
+            ├── api.js
+            ├── ui.js
+            └── formatters.js
 ```
 
-## API endpoints
-- Public: `/api/public/...`
-- Realtor: `/api/realtor/...`
-- Admin: `/api/admin/...`
-- Media: `POST /api/media/upload`
+## Environment Variables
 
-All responses follow `{ ok: true, ... }` or `{ ok: false, error: '...' }`.
+Create a `.env` file in the root directory:
 
-## Cloudinary setup
-1. Create cloud and API key/secret.
-2. Put credentials in `.env`.
-3. Upload media from Realtor portal listing manager (file picker).
-4. URLs persist to `listings.image_urls` and `listings.video_url`.
+```env
+# Required - Server will fail to start without these
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars
 
-## Deploy to Google Cloud Run
+# Admin credentials (platform admin login)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your-secure-password
+ADMIN_EMAIL=admin@example.com
+ADMIN_API_KEY=optional-bypass-key
+
+# Cloudinary (for media uploads)
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_FOLDER=clickestate/agencies/{agencyId}/listings/{listingId}
+
+# Optional
+PORT=8080
+CORS_ORIGINS=*
+NODE_ENV=production
+
+# Email notifications (optional)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-email-password
+SMTP_FROM=ClickEstate <noreply@clickestate.com>
+```
+
+## Supabase SQL Schema
+
+Run this SQL in your Supabase SQL Editor:
+
+```sql
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Profiles table (realtors & agencies)
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  role TEXT NOT NULL CHECK (role IN ('realtor', 'agency_admin', 'platform_admin')) DEFAULT 'realtor',
+  agency_id TEXT NOT NULL,
+  realtor_id TEXT NOT NULL,
+  profile_email TEXT,
+  password TEXT,
+  display_name TEXT,
+  phone TEXT,
+  whatsapp TEXT,
+  status TEXT NOT NULL CHECK (status IN ('active', 'paused')) DEFAULT 'active',
+  branding_tier TEXT NOT NULL CHECK (branding_tier IN ('starter', 'pro', 'unlimited', 'standard', 'custom_brand')) DEFAULT 'starter',
+  logo_url TEXT,
+  primary_color TEXT DEFAULT '#ff3b30',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(agency_id, realtor_id)
+);
+
+-- Listings table
+CREATE TABLE IF NOT EXISTS public.listings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id TEXT UNIQUE,
+  agency_id TEXT NOT NULL,
+  realtor_id TEXT NOT NULL,
+  title TEXT,
+  address TEXT,
+  parish TEXT,
+  community TEXT,
+  price NUMERIC,
+  property_type TEXT,
+  bedrooms INT,
+  bathrooms INT,
+  sqft INT,
+  lot_size TEXT,
+  status TEXT NOT NULL CHECK (status IN ('available', 'under_offer', 'sold', 'archived')) DEFAULT 'available',
+  description TEXT,
+  features TEXT,
+  image_urls TEXT,
+  video_url TEXT,
+  featured BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Viewing requests table
+CREATE TABLE IF NOT EXISTS public.viewing_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  request_id TEXT UNIQUE,
+  agency_id TEXT NOT NULL,
+  realtor_id TEXT NOT NULL,
+  listing_id TEXT,
+  customer_name TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  customer_email TEXT,
+  request_type TEXT NOT NULL CHECK (request_type IN ('whatsapp', 'live_video', 'walk_in', 'call')) DEFAULT 'whatsapp',
+  status TEXT NOT NULL CHECK (status IN ('new', 'contacted', 'booked', 'closed', 'no_show')) DEFAULT 'new',
+  preferred_date TEXT,
+  preferred_time TEXT,
+  notes TEXT,
+  source TEXT DEFAULT 'storefront',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_profiles_agency_id ON public.profiles(agency_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_realtor_id ON public.profiles(realtor_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_status ON public.profiles(status);
+CREATE INDEX IF NOT EXISTS idx_listings_agency_id ON public.listings(agency_id);
+CREATE INDEX IF NOT EXISTS idx_listings_realtor_id ON public.listings(realtor_id);
+CREATE INDEX IF NOT EXISTS idx_listings_status ON public.listings(status);
+CREATE INDEX IF NOT EXISTS idx_requests_agency_id ON public.viewing_requests(agency_id);
+CREATE INDEX IF NOT EXISTS idx_requests_status ON public.viewing_requests(status);
+
+-- Disable RLS for v1 (using service role key server-side)
+ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.listings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.viewing_requests DISABLE ROW LEVEL SECURITY;
+```
+
+## API Endpoints
+
+### Public API
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/public/agency/:agencyId` | Get agency info |
+| GET | `/api/public/agency/:agencyId/listings` | Get agency listings |
+| GET | `/api/public/listings?agencyIds=...` | Get listings by agency IDs (up to 3) |
+| GET | `/api/public/listing/:listingId` | Get single listing |
+| GET | `/api/public/compare?ids=...` | Compare listings |
+| GET | `/api/public/featured` | Get featured listings |
+| POST | `/api/public/agency/:agencyId/requests` | Submit viewing request |
+
+### Realtor API (requires JWT)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/realtor/login` | Login and get token |
+| GET | `/api/realtor/me` | Get current profile |
+| PATCH | `/api/realtor/profile` | Update profile |
+| GET | `/api/realtor/listings` | Get my listings |
+| POST | `/api/realtor/listings` | Create/update listing |
+| POST | `/api/realtor/listings/:id/archive` | Archive listing |
+| POST | `/api/realtor/listings/:id/toggle-featured` | Toggle featured |
+| POST | `/api/media/upload` | Upload media files |
+| POST | `/api/media/delete` | Delete media |
+| GET | `/api/realtor/requests` | Get my requests |
+| POST | `/api/realtor/requests/:id/status` | Update request status |
+| GET | `/api/realtor/summary` | Get KPIs |
+| GET | `/api/realtor/analytics` | Get detailed analytics |
+
+### Admin API (requires admin JWT)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/admin/login` | Admin login |
+| GET | `/api/admin/summary` | Platform summary |
+| GET | `/api/admin/analytics` | Detailed analytics |
+| GET | `/api/admin/agencies` | List agencies |
+| POST | `/api/admin/agencies` | Create agency |
+| PATCH | `/api/admin/agencies/:id` | Update agency |
+| POST | `/api/admin/reset-password` | Reset password |
+| GET | `/api/admin/listings` | All listings |
+| GET | `/api/admin/requests` | All requests |
+
+## Local Development
+
 ```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd clickestate
+
+# 2. Install dependencies
+npm install
+
+# 3. Create environment file
+cp .env.example .env
+# Edit .env with your credentials
+
+# 4. Start the server
+npm start
+
+# 5. Open in browser
+# Storefront: http://localhost:8080/storefront
+# Realtor Portal: http://localhost:8080/realtor
+# Admin Portal: http://localhost:8080/admin
+```
+
+## Cloud Run Deployment
+
+```bash
+# Build and push container
 gcloud builds submit --tag gcr.io/PROJECT_ID/clickestate
+
+# Deploy to Cloud Run
 gcloud run deploy clickestate \
   --image gcr.io/PROJECT_ID/clickestate \
   --platform managed \
@@ -159,15 +297,47 @@ gcloud run deploy clickestate \
   --set-env-vars "SUPABASE_URL=...,SUPABASE_SERVICE_ROLE_KEY=...,JWT_SECRET=...,ADMIN_USERNAME=...,ADMIN_PASSWORD=...,CLOUDINARY_CLOUD_NAME=...,CLOUDINARY_API_KEY=...,CLOUDINARY_API_SECRET=..."
 ```
 
-## Manual smoke test checklist
-1. Admin login works with env credentials.
-2. Admin creates agency + realtor credentials.
-3. Realtor login works from `/realtor`.
-4. Realtor creates listing and uploads image/video.
-5. Storefront loads same listing by agency IDs.
-6. Storefront submits viewing request.
-7. Request appears in realtor portal and admin requests feed.
+## Cloudinary Setup
 
-## Notes
-- Frontends are vanilla HTML/CSS/JS (no React).
-- Auth passwords are plain in `profiles.password` for v1 only; hashing can be added in `services/auth.js` and login flow later.
+1. Create a Cloudinary account at https://cloudinary.com
+2. Go to Dashboard > Settings > API Keys
+3. Copy Cloud Name, API Key, and API Secret to your `.env`
+4. Media uploads are handled server-side with signed uploads
+
+## Plan Limits
+
+| Plan | Listings | Images/Listing | Videos/Listing |
+|------|----------|----------------|----------------|
+| Starter | 5 | 3 | 0 |
+| Pro | 33 | 6 | 2 |
+| Unlimited | ∞ | 12 | 3 |
+
+## Test Checklist
+
+- [ ] Admin login with env credentials
+- [ ] Admin creates agency with realtor
+- [ ] Realtor login works
+- [ ] Realtor creates listing
+- [ ] Realtor uploads images/video
+- [ ] Storefront loads by agency ID
+- [ ] Storefront filtering works
+- [ ] Property comparison works
+- [ ] Viewing request submits
+- [ ] Real-time notification appears
+- [ ] Request status updates
+- [ ] Email notification sends (if SMTP configured)
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## License
+
+MIT License - Pytch Marketing LLC
+
+---
+
+Built with ❤️ by Pytch Marketing LLC
