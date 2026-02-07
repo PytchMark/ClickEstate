@@ -64,6 +64,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Chart.js analytics (requests over time, status distribution)
 - [x] Conversion funnel visualization
 - [x] Listings CRUD with drawer interface
+- [x] **AI Property Description Generator** (GPT-4o powered)
 - [x] Media upload (drag-drop to Cloudinary)
 - [x] Plan-based limits enforcement (Starter/Pro/Unlimited)
 - [x] Lead pipeline (Kanban view)
