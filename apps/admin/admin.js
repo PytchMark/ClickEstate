@@ -633,6 +633,216 @@ function filterRequests() {
   });
 }
 
+// ==================== Realtor Applications ====================
+async function loadApplications() {
+  try {
+    const data = await Api.request('/api/admin/realtor-applications?limit=100');
+    applications = data.applications || [];
+    
+    content.innerHTML = `
+      <div class="mb-8">
+        <h1 class="font-clash font-bold text-2xl mb-2">Realtor Applications</h1>
+        <p class="text-[#a1a1aa]">Review and manage incoming realtor applications</p>
+      </div>
+      
+      <div class="search-bar">
+        <div class="search-wrapper">
+          <i class="ph ph-magnifying-glass"></i>
+          <input type="text" id="application-search" class="search-input" placeholder="Search applications..." data-testid="application-search">
+        </div>
+        <select id="application-status-filter" class="filter-select" data-testid="application-status-filter">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      
+      ${applications.length === 0 ? `
+        <div class="text-center py-20">
+          <i class="ph ph-users text-5xl text-[#333] mb-4"></i>
+          <h3 class="font-clash text-xl mb-2">No Applications Yet</h3>
+          <p class="text-[#a1a1aa]">Realtor applications will appear here when submitted</p>
+        </div>
+      ` : `
+        <div class="bg-[#0a0a0a] border border-[#262626] rounded-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="data-table" id="applications-table">
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>Contact</th>
+                  <th>Experience</th>
+                  <th>Plan</th>
+                  <th>Status</th>
+                  <th>Applied</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${applications.map(a => `
+                  <tr data-application-id="${a.application_id}">
+                    <td>
+                      <div class="font-medium">${a.first_name} ${a.last_name}</div>
+                      <div class="text-[#666] text-sm">${a.agency_name || 'Independent'}</div>
+                    </td>
+                    <td>
+                      <div>${a.email}</div>
+                      <div class="text-[#666] text-sm">${a.phone}</div>
+                    </td>
+                    <td class="text-[#a1a1aa]">${formatExperience(a.experience)}</td>
+                    <td><span class="tier-badge ${a.interested_plan}">${a.interested_plan}</span></td>
+                    <td><span class="status-badge ${a.status}">${a.status}</span></td>
+                    <td class="text-[#a1a1aa]">${formatDate(a.created_at)}</td>
+                    <td>
+                      <div class="flex gap-2">
+                        <button onclick="viewApplication('${a.application_id}')" class="btn-secondary btn-sm" data-testid="view-application-${a.application_id}">
+                          <i class="ph ph-eye"></i>
+                        </button>
+                        ${a.status === 'pending' ? `
+                          <button onclick="updateApplicationStatus('${a.application_id}', 'approved')" class="btn-primary btn-sm" data-testid="approve-${a.application_id}">
+                            <i class="ph ph-check"></i>
+                          </button>
+                          <button onclick="updateApplicationStatus('${a.application_id}', 'rejected')" class="btn-secondary btn-sm text-red-500" data-testid="reject-${a.application_id}">
+                            <i class="ph ph-x"></i>
+                          </button>
+                        ` : ''}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `}
+    `;
+    
+    // Search handler
+    if (applications.length > 0) {
+      document.getElementById('application-search').addEventListener('input', filterApplications);
+      document.getElementById('application-status-filter').addEventListener('change', filterApplications);
+    }
+    
+  } catch (error) {
+    content.innerHTML = `<div class="text-center py-20 text-red-500">${error.message}</div>`;
+  }
+}
+
+function filterApplications() {
+  const search = document.getElementById('application-search').value.toLowerCase();
+  const status = document.getElementById('application-status-filter').value;
+  
+  const rows = document.querySelectorAll('#applications-table tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const rowStatus = row.querySelector('.status-badge')?.textContent.toLowerCase();
+    const matchesSearch = text.includes(search);
+    const matchesStatus = !status || rowStatus === status;
+    row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+  });
+}
+
+function formatExperience(exp) {
+  const map = {
+    '0-1': 'Less than 1 year',
+    '1-3': '1-3 years',
+    '3-5': '3-5 years',
+    '5-10': '5-10 years',
+    '10+': '10+ years'
+  };
+  return map[exp] || exp;
+}
+
+async function updateApplicationStatus(applicationId, newStatus) {
+  try {
+    await Api.request(`/api/admin/realtor-applications/${applicationId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: newStatus })
+    });
+    showToast(`Application ${newStatus}`, 'success');
+    loadApplications();
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+function viewApplication(applicationId) {
+  const app = applications.find(a => a.application_id === applicationId);
+  if (!app) return;
+  
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+  modal.innerHTML = `
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
+    <div class="relative bg-[#0a0a0a] border border-[#262626] rounded-2xl w-full max-w-lg p-8">
+      <h2 class="font-clash font-bold text-2xl mb-6">Application Details</h2>
+      
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[#666] text-sm">Name</label>
+            <p class="font-medium">${app.first_name} ${app.last_name}</p>
+          </div>
+          <div>
+            <label class="text-[#666] text-sm">Status</label>
+            <p><span class="status-badge ${app.status}">${app.status}</span></p>
+          </div>
+        </div>
+        
+        <div>
+          <label class="text-[#666] text-sm">Email</label>
+          <p>${app.email}</p>
+        </div>
+        
+        <div>
+          <label class="text-[#666] text-sm">Phone</label>
+          <p>${app.phone}</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[#666] text-sm">Agency</label>
+            <p>${app.agency_name || 'Independent'}</p>
+          </div>
+          <div>
+            <label class="text-[#666] text-sm">Experience</label>
+            <p>${formatExperience(app.experience)}</p>
+          </div>
+        </div>
+        
+        <div>
+          <label class="text-[#666] text-sm">Interested Plan</label>
+          <p><span class="tier-badge ${app.interested_plan}">${app.interested_plan}</span></p>
+        </div>
+        
+        ${app.message ? `
+          <div>
+            <label class="text-[#666] text-sm">Message</label>
+            <p class="text-[#a1a1aa] bg-[#121212] p-3 rounded-lg mt-1">${app.message}</p>
+          </div>
+        ` : ''}
+        
+        <div>
+          <label class="text-[#666] text-sm">Applied</label>
+          <p>${formatDate(app.created_at)}</p>
+        </div>
+      </div>
+      
+      <div class="flex gap-3 mt-6">
+        ${app.status === 'pending' ? `
+          <button onclick="updateApplicationStatus('${app.application_id}', 'approved'); this.closest('.fixed').remove();" class="flex-1 btn-primary">Approve</button>
+          <button onclick="updateApplicationStatus('${app.application_id}', 'rejected'); this.closest('.fixed').remove();" class="flex-1 btn-secondary text-red-500">Reject</button>
+        ` : ''}
+        <button onclick="this.closest('.fixed').remove()" class="flex-1 btn-secondary">Close</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
 // ==================== Modal Functions ====================
 function openCreateModal() {
   document.getElementById('create-modal').classList.remove('hidden');
