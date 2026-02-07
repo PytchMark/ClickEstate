@@ -580,8 +580,18 @@ function openListingDrawer(listingId = null) {
       </div>
       
       <div class="form-group">
-        <label class="form-label">Description</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="form-label mb-0">Description</label>
+          <button type="button" onclick="generateAIDescription()" class="text-sm text-primary hover:text-[#d63026] flex items-center gap-1" data-testid="ai-generate-btn">
+            <i class="ph ph-sparkle"></i>
+            Generate with AI
+          </button>
+        </div>
         <textarea id="form-description" rows="4" class="form-input" data-testid="form-description">${listing?.description || ''}</textarea>
+        <div id="ai-loading" class="hidden mt-2 text-sm text-[#a1a1aa] flex items-center gap-2">
+          <i class="ph ph-circle-notch animate-spin"></i>
+          Generating description...
+        </div>
       </div>
       
       <div class="form-group">
