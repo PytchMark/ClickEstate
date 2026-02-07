@@ -756,6 +756,50 @@ document.addEventListener('DOMContentLoaded', () => {
   initRealtorApplication();
 });
 
+// ==================== Entrance Sound Effect ====================
+function initEntranceSound() {
+  const sound = document.getElementById('entrance-sound');
+  if (!sound) return;
+  
+  // Set volume (adjust as needed - 0.0 to 1.0)
+  sound.volume = 0.4;
+  
+  // Function to play sound once
+  const playEntranceSound = () => {
+    if (entranceSoundPlayed) return;
+    entranceSoundPlayed = true;
+    
+    sound.play().catch(err => {
+      console.log('Audio autoplay prevented:', err.message);
+    });
+    
+    // Remove listeners after first play
+    document.removeEventListener('click', playEntranceSound);
+    document.removeEventListener('scroll', playEntranceSound);
+    document.removeEventListener('touchstart', playEntranceSound);
+    document.removeEventListener('mousemove', playEntranceSoundOnMove);
+  };
+  
+  // Play on mouse move (with delay to feel natural)
+  let moveTimeout;
+  const playEntranceSoundOnMove = () => {
+    if (entranceSoundPlayed) return;
+    clearTimeout(moveTimeout);
+    moveTimeout = setTimeout(playEntranceSound, 500);
+  };
+  
+  // Try to play immediately (works if user has interacted before)
+  sound.play().then(() => {
+    entranceSoundPlayed = true;
+  }).catch(() => {
+    // Autoplay blocked - wait for user interaction
+    document.addEventListener('click', playEntranceSound, { once: true });
+    document.addEventListener('scroll', playEntranceSound, { once: true });
+    document.addEventListener('touchstart', playEntranceSound, { once: true });
+    document.addEventListener('mousemove', playEntranceSoundOnMove);
+  });
+}
+
 // ==================== Testimonials Banner ====================
 function initTestimonials() {
   const track = document.getElementById('testimonial-track');
