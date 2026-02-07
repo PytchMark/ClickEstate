@@ -428,6 +428,11 @@ class ClickEstateAPITester:
         self.test_ai_endpoints_with_admin_token()
         self.test_ai_endpoints_structure()
         
+        # NEW FEATURES: Test new endpoints
+        print("\n🆕 New Features Tests")
+        self.test_new_features_endpoints()
+        self.test_stripe_webhook_endpoint()
+        
         # Admin functionality tests
         print("\n👑 Admin Functionality Tests")
         self.test_admin_protected_endpoints()
