@@ -1,0 +1,96 @@
+{
+  "project_name": "ClickEstate",
+  "design_philosophy": {
+    "identity": "The 'Bloomberg Terminal' for Real Estate. High-contrast, precision, elite performance.",
+    "aesthetic": "100k SaaS. Dark Mode Dominant. Swiss Style. Electric Red Accents.",
+    "core_values": [
+      "Speed (Visual & Performance)",
+      "Exclusivity (High-end imagery, sparse layouts)",
+      "Clarity (High contrast data)"
+    ]
+  },
+  "tech_stack": {
+    "framework": "Vanilla HTML5 / CSS3 / ES6 JavaScript",
+    "styling": "Tailwind CSS (via CDN)",
+    "animations": "GSAP (ScrollTrigger, SplitText), Lenis (Smooth Scroll)",
+    "3d": "Three.js (Hero Backgrounds)",
+    "icons": "Phosphor Icons (via CDN)"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#ff3b30",
+      "primary_hover": "#d63026",
+      "background": "#050505",
+      "surface": "#121212",
+      "surface_highlight": "#1a1a1a",
+      "border": "#262626",
+      "text_main": "#ffffff",
+      "text_muted": "#a1a1aa",
+      "success": "#00c853",
+      "error": "#ff3b30"
+    },
+    "fonts": {
+      "heading": "Clash Display, sans-serif",
+      "body": "Satoshi, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "border_radius": {
+      "sm": "2px",
+      "md": "4px",
+      "lg": "8px",
+      "xl": "12px",
+      "full": "9999px"
+    }
+  },
+  "cdn_resources": [
+    "https://cdn.tailwindcss.com",
+    "https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap",
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js",
+    "https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+    "https://unpkg.com/@phosphor-icons/web"
+  ],
+  "layout_grid": {
+    "container": "max-w-[1600px] mx-auto px-6 md:px-12",
+    "grid_marketing": "grid grid-cols-1 md:grid-cols-12 gap-8",
+    "grid_dashboard": "grid grid-cols-1 md:grid-cols-4 gap-6"
+  },
+  "ui_components": {
+    "buttons": {
+      "primary": "bg-[#ff3b30] text-white px-8 py-4 font-medium uppercase tracking-wider hover:bg-[#d63026] transition-colors duration-300 text-sm",
+      "secondary": "bg-transparent border border-[#262626] text-white px-8 py-4 font-medium uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 text-sm",
+      "ghost": "text-[#a1a1aa] hover:text-white transition-colors uppercase tracking-widest text-xs"
+    },
+    "cards": {
+      "property": "group relative bg-[#121212] border border-[#262626] overflow-hidden hover:border-[#ff3b30] transition-colors duration-500",
+      "dashboard": "bg-[#0a0a0a] border border-[#262626] p-6"
+    },
+    "inputs": {
+      "default": "w-full bg-[#0a0a0a] border border-[#262626] text-white p-4 focus:outline-none focus:border-[#ff3b30] transition-colors placeholder-[#404040]"
+    }
+  },
+  "image_assets": {
+    "hero_video": "https://res.cloudinary.com/dd8pjjxsm/video/upload/v1770419902/From_KlickPin_CF_close_door_horrorshortfilm_ghost_scary_scream_shorts_horror_Vid%C3%A9o_nfvhks.mp4",
+    "luxury_house_exterior": "https://images.unsplash.com/photo-1706808849827-7366c098b317?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "luxury_apartment_interior": "https://images.unsplash.com/photo-1758448511320-05d7d28f4298?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "agent_portrait": "https://images.pexels.com/photos/8815915/pexels-photo-8815915.jpeg",
+    "map_texture": "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80"
+  },
+  "animation_rules": {
+    "scroll": "Use Lenis for smooth scrolling on the body. All scroll-triggered animations must use GSAP ScrollTrigger.",
+    "reveal": "Elements should fade up and scale slightly (y: 50, opacity: 0 -> y: 0, opacity: 1).",
+    "hover": "Images should scale (1.05) on hover. Borders should light up.",
+    "hero": "Video background must have a parallax effect (yPercent: -20) on scroll."
+  },
+  "universal_guidelines": [
+    "DO NOT use React or any build tools. Write raw HTML/JS.",
+    "Use 'data-testid' on all interactive elements.",
+    "Ensure high contrast (White text on Black bg).",
+    "Use the 'Clash Display' font for all headings to give it that premium feel.",
+    "The primary color #ff3b30 should be used sparingly - only for primary actions and accents.",
+    "For the Dashboard, use a dense grid layout. No wasted space.",
+    "For the Storefront, use massive imagery and negative space."
+  ],
+  "instructions_to_main_agent": "You are building a multi-page Vanilla JS app. Create separate HTML files for 'index.html' (Storefront), 'portal.html' (Realtor), and 'admin.html' (Admin). Use the CDN links provided in the head of every file. Initialize GSAP and Lenis in a 'main.js' file linked at the bottom of the body."
+}
