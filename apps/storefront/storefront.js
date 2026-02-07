@@ -4,25 +4,30 @@ let compareList = [];
 let currentAgencyId = '';
 let currentGalleryIndex = 0;
 let currentGalleryImages = [];
+let lenis = null;
 
 // ==================== Initialize Lenis Smooth Scroll ====================
-const lenis = new Lenis({
-  duration: 1.2,
-  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smooth: true,
-  smoothTouch: false
-});
+function initLenis() {
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+      smoothTouch: false
+    });
 
-function raf(time) {
-  lenis.raf(time);
-  requestAnimationFrame(raf);
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Connect Lenis to GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
 }
-requestAnimationFrame(raf);
-
-// Connect Lenis to GSAP ScrollTrigger
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time) => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
 
 // ==================== Three.js Background ====================
 function initThreeJS() {
