@@ -36,6 +36,7 @@ app.use(rateLimit({ windowMs: 60 * 1000, limit: 200 }));
 
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use('/storefront', express.static(path.join(__dirname, 'apps/storefront')));
+app.use('/realtor/signup', express.static(path.join(__dirname, 'apps/signup')));
 app.use('/realtor', express.static(path.join(__dirname, 'apps/realtor')));
 app.use('/admin', express.static(path.join(__dirname, 'apps/admin')));
 app.get('/', (_, res) => res.redirect('/storefront'));
