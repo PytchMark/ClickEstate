@@ -5,6 +5,19 @@ let currentAgencyId = '';
 let currentGalleryIndex = 0;
 let currentGalleryImages = [];
 let lenis = null;
+let mortgageTerm = 30;
+
+// Testimonials data
+const testimonials = [
+  { quote: "Found my dream home in just 2 weeks!", author: "Sarah M." },
+  { quote: "The best real estate platform I've ever used", author: "James K." },
+  { quote: "Professional agents, amazing properties", author: "Maria L." },
+  { quote: "Closed on our first home thanks to ClickEstate", author: "David & Amy" },
+  { quote: "5 stars! Exceptional service all around", author: "Robert T." },
+  { quote: "The mortgage calculator saved us thousands", author: "Jennifer P." },
+  { quote: "Quick responses, verified listings, great experience", author: "Michael B." },
+  { quote: "Finally, a platform that gets real estate right", author: "Linda S." }
+];
 
 // ==================== Initialize Lenis Smooth Scroll ====================
 function initLenis() {
