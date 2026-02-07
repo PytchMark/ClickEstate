@@ -158,6 +158,7 @@ function initAnimations() {
   
   // Reveal animations for elements
   gsap.utils.toArray('.reveal-up').forEach((el) => {
+    gsap.set(el, { opacity: 0, y: 30 });
     gsap.to(el, {
       opacity: 1,
       y: 0,
@@ -166,7 +167,7 @@ function initAnimations() {
       scrollTrigger: {
         trigger: el,
         start: 'top 85%',
-        toggleActions: 'play none none reverse'
+        toggleActions: 'play none none none'
       }
     });
   });
@@ -182,7 +183,7 @@ function initAnimations() {
       scrollTrigger: {
         trigger: el,
         start: 'top 80%',
-        toggleActions: 'play none none reverse'
+        toggleActions: 'play none none none'
       }
     });
   });
