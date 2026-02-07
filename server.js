@@ -160,6 +160,61 @@ app.post('/api/public/agency/:agencyId/requests', async (req, res) => {
   } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
 });
 
+// ==================== REALTOR APPLICATIONS ====================
+
+const applicationIdGen = () => `APP-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.toUpperCase();
+
+app.post('/api/public/realtor-applications', async (req, res) => {
+  try {
+    const { first_name, last_name, email, phone, agency_name, experience, interested_plan, message } = req.body;
+    
+    if (!first_name || !last_name || !email || !phone || !experience) {
+      return res.status(400).json({ ok: false, error: 'First name, last name, email, phone, and experience are required' });
+    }
+    
+    const payload = {
+      application_id: applicationIdGen(),
+      first_name,
+      last_name,
+      email,
+      phone,
+      agency_name: agency_name || null,
+      experience,
+      interested_plan: interested_plan || 'starter',
+      message: message || null,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+    
+    const rows = await insert('realtor_applications', payload);
+    return res.json({ ok: true, application: rows[0] });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
+app.get('/api/admin/realtor-applications', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const filters = [];
+    if (req.query.status) filters.push(`status=eq.${encodeURIComponent(req.query.status)}`);
+    if (req.query.search) filters.push(`or=(first_name.ilike.*${req.query.search}*,last_name.ilike.*${req.query.search}*,email.ilike.*${req.query.search}*)`);
+    const query = `?${filters.join('&')}${filters.length ? '&' : ''}order=created_at.desc&limit=${Math.min(200, Number(req.query.limit || 50))}`;
+    const rows = await select('realtor_applications', query);
+    return res.json({ ok: true, applications: rows });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
+app.patch('/api/admin/realtor-applications/:applicationId', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const allowedFields = ['status', 'admin_notes'];
+    const updates = {};
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) updates[field] = req.body[field];
+    });
+    updates.updated_at = new Date().toISOString();
+    const rows = await update('realtor_applications', `?application_id=eq.${encodeURIComponent(req.params.applicationId)}`, updates);
+    return res.json({ ok: true, application: rows[0] });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
 // ==================== REALTOR AUTH + API ====================
 
 app.post('/api/realtor/login', async (req, res) => {
