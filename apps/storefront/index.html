@@ -1,12 +1,420 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>ClickEstate Storefront</title>
-<link rel='stylesheet' href='/assets/css/shared.css'><link rel='stylesheet' href='/storefront/storefront.css'></head>
-<body class='texture'>
-<header class='hero'><video autoplay muted loop playsinline class='hero-video'><source src='https://res.cloudinary.com/demo/video/upload/v1696580507/samples/sea-turtle.mp4' type='video/mp4'></video><div class='overlay'></div>
-<div class='hero-content'><h1>Verified Listings. Faster Viewings. Trusted Realtors.</h1><p>Enter up to 3 Agency IDs and discover premium homes now.</p>
-<div class='search-bar'><input id='agencyIds' class='input' placeholder='AGY-0001,AGY-0002'><button id='loadBtn' class='btn btn-primary'>Load Listings</button></div></div></header>
-<main class='main'><section id='agencyHeader' class='card hidden'></section>
-<section class='filters card'><div class='grid fgrid'><select id='parish'><option value=''>All Parishes</option></select><select id='ptype'><option value=''>All Types</option><option>house</option><option>apartment</option><option>land</option></select><input id='beds' class='input' placeholder='Bedrooms min'><input id='maxPrice' class='input' placeholder='Max price'></div></section>
-<section id='listingGrid' class='grid cards'></section></main>
-<div id='modal' class='modal hidden'><div class='modal-body card'><button id='closeModal' class='btn'>Close</button><div id='modalContent'></div></div></div>
-<script src='/assets/js/api.js'></script><script src='/assets/js/ui.js'></script><script src='/assets/js/formatters.js'></script><script src='/storefront/storefront.js'></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ClickEstate - Premium real estate listings. Find verified properties with trusted realtors. Book viewings instantly.">
+  <meta name="keywords" content="real estate, property, homes, apartments, land, verified listings, realtors">
+  <meta property="og:title" content="ClickEstate - Premium Real Estate">
+  <meta property="og:description" content="Discover verified properties from trusted realtors">
+  <meta property="og:type" content="website">
+  <title>ClickEstate | Premium Real Estate</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ff3b30',
+            surface: '#121212',
+            border: '#262626'
+          },
+          fontFamily: {
+            clash: ['Clash Display', 'sans-serif'],
+            satoshi: ['Satoshi', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+  
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <link rel="stylesheet" href="storefront.css">
+</head>
+<body class="bg-[#050505] text-white font-satoshi overflow-x-hidden">
+  
+  <!-- Noise Overlay -->
+  <div class="noise-overlay"></div>
+  
+  <!-- Three.js Canvas -->
+  <canvas id="three-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 nav-blur" data-testid="main-nav">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
+      <a href="/storefront" class="font-clash font-bold text-2xl tracking-tight" data-testid="logo">
+        Click<span class="text-primary">Estate</span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#listings" class="text-[#a1a1aa] hover:text-white transition-colors text-sm uppercase tracking-widest" data-testid="nav-listings">Listings</a>
+        <a href="#compare" class="text-[#a1a1aa] hover:text-white transition-colors text-sm uppercase tracking-widest" data-testid="nav-compare">Compare</a>
+        <a href="/realtor" class="text-[#a1a1aa] hover:text-white transition-colors text-sm uppercase tracking-widest" data-testid="nav-portal">Agent Portal</a>
+      </div>
+      <button id="mobile-menu-btn" class="md:hidden p-2" data-testid="mobile-menu-btn">
+        <i class="ph ph-list text-2xl"></i>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="fixed inset-0 bg-[#050505] z-40 hidden flex-col items-center justify-center gap-8" data-testid="mobile-menu">
+    <a href="#listings" class="text-2xl font-clash">Listings</a>
+    <a href="#compare" class="text-2xl font-clash">Compare</a>
+    <a href="/realtor" class="text-2xl font-clash">Agent Portal</a>
+    <button id="mobile-menu-close" class="absolute top-6 right-6 p-2" data-testid="mobile-menu-close">
+      <i class="ph ph-x text-3xl"></i>
+    </button>
+  </div>
+  
+  <!-- Hero Section -->
+  <section class="hero-section relative min-h-screen flex items-end pb-20 md:pb-32" data-testid="hero-section">
+    <video autoplay muted loop playsinline class="hero-video" data-testid="hero-video">
+      <source src="https://res.cloudinary.com/dd8pjjxsm/video/upload/v1770419902/From_KlickPin_CF_close_door_horrorshortfilm_ghost_scary_scream_shorts_horror_Vid%C3%A9o_nfvhks.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-gradient"></div>
+    
+    <div class="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 w-full">
+      <div class="max-w-3xl">
+        <p class="hero-tag text-primary uppercase tracking-[0.3em] text-sm mb-4 opacity-0" data-testid="hero-tag">Premium Real Estate</p>
+        <h1 class="hero-title font-clash font-bold text-4xl md:text-6xl lg:text-7xl leading-[1.1] mb-6 opacity-0" data-testid="hero-title">
+          Find Your <br><span class="text-primary">Dream Property</span>
+        </h1>
+        <p class="hero-desc text-[#a1a1aa] text-lg md:text-xl mb-8 max-w-xl opacity-0" data-testid="hero-desc">
+          Verified listings from trusted realtors. Fast viewings. Premium properties.
+        </p>
+        
+        <!-- Search Bar -->
+        <div class="hero-search bg-[#121212]/90 backdrop-blur-xl border border-[#262626] rounded-lg p-2 flex flex-col md:flex-row gap-2 opacity-0" data-testid="hero-search">
+          <input 
+            type="text" 
+            id="agency-input" 
+            placeholder="Enter Agency ID (e.g., AGY-0001)" 
+            class="flex-1 bg-transparent px-4 py-3 text-white placeholder-[#666] focus:outline-none"
+            data-testid="agency-input"
+          >
+          <button 
+            id="load-listings-btn" 
+            class="bg-primary text-white px-8 py-3 font-medium uppercase tracking-wider hover:bg-[#d63026] transition-all duration-300 rounded-md flex items-center justify-center gap-2"
+            data-testid="load-listings-btn"
+          >
+            <i class="ph ph-magnifying-glass"></i>
+            Search
+          </button>
+        </div>
+        
+        <!-- Trust Badges -->
+        <div class="hero-badges flex flex-wrap gap-6 mt-8 opacity-0" data-testid="hero-badges">
+          <div class="flex items-center gap-2 text-[#a1a1aa] text-sm">
+            <i class="ph ph-seal-check text-primary text-xl"></i>
+            <span>Verified Listings</span>
+          </div>
+          <div class="flex items-center gap-2 text-[#a1a1aa] text-sm">
+            <i class="ph ph-lightning text-primary text-xl"></i>
+            <span>Fast Response</span>
+          </div>
+          <div class="flex items-center gap-2 text-[#a1a1aa] text-sm">
+            <i class="ph ph-shield-check text-primary text-xl"></i>
+            <span>Trusted Agents</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 scroll-indicator opacity-0" data-testid="scroll-indicator">
+      <div class="w-6 h-10 border-2 border-[#444] rounded-full flex items-start justify-center p-1">
+        <div class="w-1 h-2 bg-primary rounded-full animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Agency Header (shows after search) -->
+  <section id="agency-header" class="hidden py-12 border-b border-[#262626]" data-testid="agency-header">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div id="agency-logo" class="w-16 h-16 rounded-full bg-[#1a1a1a] flex items-center justify-center overflow-hidden" data-testid="agency-logo">
+            <i class="ph ph-buildings text-3xl text-[#666]"></i>
+          </div>
+          <div>
+            <h2 id="agency-name" class="font-clash font-bold text-2xl" data-testid="agency-name">Agency Name</h2>
+            <p class="text-[#a1a1aa] text-sm flex items-center gap-2">
+              <i class="ph ph-seal-check text-primary"></i>
+              Verified Partner
+            </p>
+          </div>
+        </div>
+        <a id="agency-whatsapp" href="#" target="_blank" class="bg-[#25D366] text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-[#20bd5a] transition-colors" data-testid="agency-whatsapp">
+          <i class="ph ph-whatsapp-logo text-xl"></i>
+          WhatsApp Agent
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Filters Section -->
+  <section id="filters-section" class="hidden py-8 sticky top-16 z-30 bg-[#050505]/95 backdrop-blur-lg border-b border-[#262626]" data-testid="filters-section">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="flex flex-wrap gap-4">
+        <select id="filter-parish" class="bg-[#121212] border border-[#262626] rounded-lg px-4 py-2 text-white focus:border-primary focus:outline-none" data-testid="filter-parish">
+          <option value="">All Parishes</option>
+        </select>
+        <select id="filter-type" class="bg-[#121212] border border-[#262626] rounded-lg px-4 py-2 text-white focus:border-primary focus:outline-none" data-testid="filter-type">
+          <option value="">All Types</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="land">Land</option>
+          <option value="condo">Condo</option>
+          <option value="villa">Villa</option>
+        </select>
+        <input type="number" id="filter-beds" placeholder="Min Beds" class="bg-[#121212] border border-[#262626] rounded-lg px-4 py-2 text-white w-28 focus:border-primary focus:outline-none" data-testid="filter-beds">
+        <input type="number" id="filter-max-price" placeholder="Max Price" class="bg-[#121212] border border-[#262626] rounded-lg px-4 py-2 text-white w-32 focus:border-primary focus:outline-none" data-testid="filter-max-price">
+        <button id="clear-filters" class="text-[#a1a1aa] hover:text-white transition-colors flex items-center gap-1" data-testid="clear-filters">
+          <i class="ph ph-x"></i>
+          Clear
+        </button>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Listings Section -->
+  <section id="listings" class="py-20" data-testid="listings-section">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="text-center mb-16">
+        <p class="text-primary uppercase tracking-[0.3em] text-sm mb-4 reveal-up">Featured Properties</p>
+        <h2 class="font-clash font-bold text-4xl md:text-5xl reveal-up">Premium Listings</h2>
+      </div>
+      
+      <!-- Loading State -->
+      <div id="listings-loading" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div id="listings-empty" class="text-center py-20">
+        <i class="ph ph-house-line text-6xl text-[#333] mb-4"></i>
+        <h3 class="font-clash text-xl mb-2">Enter an Agency ID to discover properties</h3>
+        <p class="text-[#a1a1aa]">Search for verified listings from trusted realtors</p>
+      </div>
+      
+      <!-- Listings Grid -->
+      <div id="listings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="listings-grid"></div>
+    </div>
+  </section>
+  
+  <!-- Compare Section -->
+  <section id="compare" class="py-20 bg-[#0a0a0a] border-t border-b border-[#262626]" data-testid="compare-section">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="text-center mb-16">
+        <p class="text-primary uppercase tracking-[0.3em] text-sm mb-4 reveal-up">Property Comparison</p>
+        <h2 class="font-clash font-bold text-4xl md:text-5xl reveal-up">Compare Properties</h2>
+        <p class="text-[#a1a1aa] mt-4 reveal-up">Select up to 4 properties to compare side by side</p>
+      </div>
+      
+      <!-- Compare Slots -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="compare-slots" data-testid="compare-slots">
+        <div class="compare-slot" data-slot="0">
+          <div class="h-48 bg-[#121212] border-2 border-dashed border-[#262626] rounded-lg flex items-center justify-center cursor-pointer hover:border-primary transition-colors" data-testid="compare-slot-0">
+            <div class="text-center">
+              <i class="ph ph-plus text-3xl text-[#444] mb-2"></i>
+              <p class="text-[#666] text-sm">Add Property</p>
+            </div>
+          </div>
+        </div>
+        <div class="compare-slot" data-slot="1">
+          <div class="h-48 bg-[#121212] border-2 border-dashed border-[#262626] rounded-lg flex items-center justify-center cursor-pointer hover:border-primary transition-colors" data-testid="compare-slot-1">
+            <div class="text-center">
+              <i class="ph ph-plus text-3xl text-[#444] mb-2"></i>
+              <p class="text-[#666] text-sm">Add Property</p>
+            </div>
+          </div>
+        </div>
+        <div class="compare-slot" data-slot="2">
+          <div class="h-48 bg-[#121212] border-2 border-dashed border-[#262626] rounded-lg flex items-center justify-center cursor-pointer hover:border-primary transition-colors" data-testid="compare-slot-2">
+            <div class="text-center">
+              <i class="ph ph-plus text-3xl text-[#444] mb-2"></i>
+              <p class="text-[#666] text-sm">Add Property</p>
+            </div>
+          </div>
+        </div>
+        <div class="compare-slot" data-slot="3">
+          <div class="h-48 bg-[#121212] border-2 border-dashed border-[#262626] rounded-lg flex items-center justify-center cursor-pointer hover:border-primary transition-colors" data-testid="compare-slot-3">
+            <div class="text-center">
+              <i class="ph ph-plus text-3xl text-[#444] mb-2"></i>
+              <p class="text-[#666] text-sm">Add Property</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Compare Table -->
+      <div id="compare-table" class="hidden overflow-x-auto" data-testid="compare-table">
+        <table class="w-full min-w-[800px]">
+          <thead>
+            <tr class="border-b border-[#262626]">
+              <th class="text-left py-4 px-4 text-[#a1a1aa] font-medium">Feature</th>
+              <th id="compare-head-0" class="text-left py-4 px-4 font-clash"></th>
+              <th id="compare-head-1" class="text-left py-4 px-4 font-clash"></th>
+              <th id="compare-head-2" class="text-left py-4 px-4 font-clash"></th>
+              <th id="compare-head-3" class="text-left py-4 px-4 font-clash"></th>
+            </tr>
+          </thead>
+          <tbody id="compare-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Stats Section -->
+  <section class="py-20 horizontal-scroll-section" data-testid="stats-section">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="stat-card text-center reveal-up">
+          <div class="font-clash font-bold text-5xl md:text-6xl text-primary mb-2" data-count="500">0</div>
+          <p class="text-[#a1a1aa] uppercase tracking-wider text-sm">Properties</p>
+        </div>
+        <div class="stat-card text-center reveal-up">
+          <div class="font-clash font-bold text-5xl md:text-6xl text-primary mb-2" data-count="150">0</div>
+          <p class="text-[#a1a1aa] uppercase tracking-wider text-sm">Agents</p>
+        </div>
+        <div class="stat-card text-center reveal-up">
+          <div class="font-clash font-bold text-5xl md:text-6xl text-primary mb-2" data-count="98">0</div>
+          <p class="text-[#a1a1aa] uppercase tracking-wider text-sm">% Satisfaction</p>
+        </div>
+        <div class="stat-card text-center reveal-up">
+          <div class="font-clash font-bold text-5xl md:text-6xl text-primary mb-2" data-count="24">0</div>
+          <p class="text-[#a1a1aa] uppercase tracking-wider text-sm">Hour Response</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="py-16 border-t border-[#262626]" data-testid="footer">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+        <div>
+          <a href="/storefront" class="font-clash font-bold text-2xl tracking-tight">
+            Click<span class="text-primary">Estate</span>
+          </a>
+          <p class="text-[#666] text-sm mt-2">Powered by Pytch Marketing LLC</p>
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="/realtor" class="text-[#a1a1aa] hover:text-white transition-colors text-sm">Agent Portal</a>
+          <a href="#" class="text-[#a1a1aa] hover:text-white transition-colors text-sm">Privacy</a>
+          <a href="#" class="text-[#a1a1aa] hover:text-white transition-colors text-sm">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Listing Detail Modal -->
+  <div id="listing-modal" class="fixed inset-0 z-50 hidden" data-testid="listing-modal">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm modal-backdrop"></div>
+    <div class="relative h-full overflow-y-auto">
+      <div class="min-h-full flex items-center justify-center p-4 md:p-8">
+        <div class="bg-[#0a0a0a] border border-[#262626] rounded-2xl w-full max-w-5xl modal-content">
+          <div id="modal-body" class="p-6 md:p-8"></div>
+        </div>
+      </div>
+    </div>
+    <button id="modal-close" class="fixed top-6 right-6 w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center hover:bg-[#262626] transition-colors z-10" data-testid="modal-close">
+      <i class="ph ph-x text-2xl"></i>
+    </button>
+  </div>
+  
+  <!-- Request Modal -->
+  <div id="request-modal" class="fixed inset-0 z-50 hidden" data-testid="request-modal">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm request-backdrop"></div>
+    <div class="relative h-full flex items-center justify-center p-4">
+      <div class="bg-[#0a0a0a] border border-[#262626] rounded-2xl w-full max-w-md p-8 request-content">
+        <h3 class="font-clash font-bold text-2xl mb-6">Book a Viewing</h3>
+        <form id="request-form" class="space-y-4">
+          <input type="hidden" id="req-listing-id">
+          <input type="hidden" id="req-agency-id">
+          <input type="hidden" id="req-realtor-id">
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Your Name *</label>
+            <input type="text" id="req-name" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="req-name">
+          </div>
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Phone Number *</label>
+            <input type="tel" id="req-phone" required class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="req-phone">
+          </div>
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Email (optional)</label>
+            <input type="email" id="req-email" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="req-email">
+          </div>
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Viewing Type</label>
+            <select id="req-type" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="req-type">
+              <option value="walk_in">In-Person Viewing</option>
+              <option value="live_video">Live Video Tour</option>
+              <option value="whatsapp">WhatsApp Call</option>
+              <option value="call">Phone Call</option>
+            </select>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[#a1a1aa] text-sm mb-1 block">Preferred Date</label>
+              <input type="date" id="req-date" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="req-date">
+            </div>
+            <div>
+              <label class="text-[#a1a1aa] text-sm mb-1 block">Preferred Time</label>
+              <input type="time" id="req-time" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none" data-testid="req-time">
+            </div>
+          </div>
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-1 block">Notes</label>
+            <textarea id="req-notes" rows="3" class="w-full bg-[#121212] border border-[#262626] rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none resize-none" data-testid="req-notes"></textarea>
+          </div>
+          
+          <button type="submit" class="w-full bg-primary text-white py-4 rounded-lg font-medium uppercase tracking-wider hover:bg-[#d63026] transition-colors" data-testid="req-submit">
+            Submit Request
+          </button>
+        </form>
+        
+        <button id="request-close" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-[#666] hover:text-white transition-colors" data-testid="request-close">
+          <i class="ph ph-x text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3" data-testid="toast-container"></div>
+  
+  <!-- Scripts -->
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/formatters.js"></script>
+  <script src="storefront.js"></script>
+</body>
+</html>
