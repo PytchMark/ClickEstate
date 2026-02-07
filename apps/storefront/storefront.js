@@ -742,7 +742,108 @@ document.addEventListener('DOMContentLoaded', () => {
       prevGalleryImage();
     }
   });
+  
+  // Initialize testimonials banner
+  initTestimonials();
+  
+  // Initialize mortgage calculator
+  initMortgageCalculator();
 });
+
+// ==================== Testimonials Banner ====================
+function initTestimonials() {
+  const track = document.getElementById('testimonial-track');
+  if (!track) return;
+  
+  const items = testimonials.map(t => `
+    <div class="testimonial-item">
+      <i class="ph ph-quotes text-primary text-xl"></i>
+      <span class="quote">"${t.quote}"</span>
+      <span class="author">— ${t.author}</span>
+    </div>
+  `).join('');
+  
+  // Duplicate for infinite scroll
+  track.innerHTML = items + items;
+}
+
+// ==================== Mortgage Calculator ====================
+function initMortgageCalculator() {
+  const priceSlider = document.getElementById('mortgage-price');
+  const downpaymentSlider = document.getElementById('mortgage-downpayment');
+  const rateSlider = document.getElementById('mortgage-rate');
+  
+  if (!priceSlider) return;
+  
+  // Add event listeners
+  priceSlider.addEventListener('input', updateMortgage);
+  downpaymentSlider.addEventListener('input', updateMortgage);
+  rateSlider.addEventListener('input', updateMortgage);
+  
+  // Update slider backgrounds
+  [priceSlider, downpaymentSlider, rateSlider].forEach(slider => {
+    slider.addEventListener('input', function() {
+      const percent = ((this.value - this.min) / (this.max - this.min)) * 100;
+      this.style.setProperty('--value', percent + '%');
+    });
+    // Initialize
+    const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+    slider.style.setProperty('--value', percent + '%');
+  });
+  
+  // Initial calculation
+  updateMortgage();
+}
+
+function setLoanTerm(years) {
+  mortgageTerm = years;
+  document.getElementById('term-display').textContent = `${years} years`;
+  
+  // Update button styles
+  document.querySelectorAll('.term-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.term) === years);
+    btn.classList.toggle('bg-primary/10', parseInt(btn.dataset.term) === years);
+    btn.classList.toggle('border-primary', parseInt(btn.dataset.term) === years);
+  });
+  
+  updateMortgage();
+}
+
+function updateMortgage() {
+  const price = parseFloat(document.getElementById('mortgage-price').value);
+  const downpaymentPercent = parseFloat(document.getElementById('mortgage-downpayment').value);
+  const rate = parseFloat(document.getElementById('mortgage-rate').value);
+  
+  const downpayment = price * (downpaymentPercent / 100);
+  const loanAmount = price - downpayment;
+  const monthlyRate = rate / 100 / 12;
+  const numberOfPayments = mortgageTerm * 12;
+  
+  // Calculate monthly payment using standard mortgage formula
+  let monthlyPayment;
+  if (monthlyRate === 0) {
+    monthlyPayment = loanAmount / numberOfPayments;
+  } else {
+    monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  }
+  
+  const totalCost = monthlyPayment * numberOfPayments;
+  const totalInterest = totalCost - loanAmount;
+  
+  // Update displays
+  document.getElementById('price-display').textContent = formatPrice(price);
+  document.getElementById('downpayment-display').textContent = `${downpaymentPercent}% (${formatPrice(downpayment)})`;
+  document.getElementById('rate-display').textContent = `${rate}%`;
+  
+  document.getElementById('monthly-payment').textContent = formatPrice(monthlyPayment);
+  document.getElementById('pi-payment').textContent = formatPrice(monthlyPayment);
+  document.getElementById('loan-amount').textContent = formatPrice(loanAmount);
+  document.getElementById('total-interest').textContent = formatPrice(totalInterest);
+  document.getElementById('total-cost').textContent = formatPrice(totalCost);
+  
+  // Animate the payment display
+  gsap.fromTo('#monthly-payment', { scale: 1.05 }, { scale: 1, duration: 0.3 });
+}
 
 // Make functions globally available
 window.openListingModal = openListingModal;
