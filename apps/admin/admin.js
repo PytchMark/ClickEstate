@@ -3,6 +3,7 @@ let analytics = null;
 let agencies = [];
 let listings = [];
 let requests = [];
+let applications = [];
 let socket = null;
 let charts = {};
 
