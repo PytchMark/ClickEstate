@@ -68,6 +68,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Conversion funnel visualization
 - [x] Listings CRUD with drawer interface
 - [x] **AI Property Description Generator** (GPT-4o powered)
+- [x] **AI Property Image Tagging** (auto-detect features from photos)
 - [x] Media upload (drag-drop to Cloudinary)
 - [x] Plan-based limits enforcement (Starter/Pro/Unlimited)
 - [x] Lead pipeline (Kanban view)
@@ -75,6 +76,17 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Profile settings management
 - [x] Real-time WebSocket notifications
 - [x] Toast notifications
+
+### ✅ Realtor Signup Funnel
+- [x] SaaS-style landing page with feature showcase
+- [x] Dashboard preview section
+- [x] Feature highlights with icons
+- [x] **Pricing Plans** (Starter $29, Pro $79, Unlimited $199)
+- [x] Running testimonials banner
+- [x] Signup form with validation
+- [x] **Stripe Payment Integration** (subscription checkout)
+- [x] Success/cancel handling
+- [x] GSAP scroll animations
 
 ### ✅ Admin Portal Features
 - [x] Platform admin login (env-based credentials)
