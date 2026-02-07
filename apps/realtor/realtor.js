@@ -1107,3 +1107,4 @@ window.archiveListing = archiveListing;
 window.deleteMedia = deleteMedia;
 window.updateRequestStatus = updateRequestStatus;
 window.showRequestDetails = showRequestDetails;
+window.generateAIDescription = generateAIDescription;
