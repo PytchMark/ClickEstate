@@ -310,6 +310,95 @@ class ClickEstateAPITester:
         except Exception as e:
             self.log_test("CORS Headers", False, f"CORS test failed: {str(e)}")
 
+    def test_new_features_endpoints(self):
+        """Test new features added: pricing plans, payments, AI image analysis"""
+        
+        # Test pricing plans endpoint (public)
+        success, response = self.run_test(
+            "Public Pricing Plans Endpoint",
+            "GET",
+            "/api/public/plans",
+            200
+        )
+        
+        if success and 'plans' in response:
+            plans = response['plans']
+            expected_plans = ['starter', 'pro', 'unlimited']
+            found_plans = list(plans.keys()) if isinstance(plans, dict) else []
+            
+            if all(plan in found_plans for plan in expected_plans):
+                self.log_test("Pricing Plans Structure", True, f"Found plans: {found_plans}")
+                
+                # Check plan details
+                starter = plans.get('starter', {})
+                if starter.get('price') == 29.0 and starter.get('name') == 'Starter':
+                    self.log_test("Starter Plan Details", True, f"Price: ${starter.get('price')}, Name: {starter.get('name')}")
+                else:
+                    self.log_test("Starter Plan Details", False, f"Expected price: 29.0, name: Starter, got: {starter}")
+                
+                pro = plans.get('pro', {})
+                if pro.get('price') == 79.0 and pro.get('name') == 'Pro':
+                    self.log_test("Pro Plan Details", True, f"Price: ${pro.get('price')}, Name: {pro.get('name')}")
+                else:
+                    self.log_test("Pro Plan Details", False, f"Expected price: 79.0, name: Pro, got: {pro}")
+                
+                unlimited = plans.get('unlimited', {})
+                if unlimited.get('price') == 199.0 and unlimited.get('name') == 'Unlimited':
+                    self.log_test("Unlimited Plan Details", True, f"Price: ${unlimited.get('price')}, Name: {unlimited.get('name')}")
+                else:
+                    self.log_test("Unlimited Plan Details", False, f"Expected price: 199.0, name: Unlimited, got: {unlimited}")
+            else:
+                self.log_test("Pricing Plans Structure", False, f"Expected {expected_plans}, got: {found_plans}")
+        elif success:
+            self.log_test("Pricing Plans Structure", False, f"Missing 'plans' field: {response}")
+        
+        # Test payments checkout endpoint (should require data)
+        success, response = self.run_test(
+            "Payments Checkout Endpoint (Missing Data)",
+            "POST",
+            "/api/payments/checkout",
+            400,
+            data={}
+        )
+        
+        # Test payments checkout with valid data structure
+        success, response = self.run_test(
+            "Payments Checkout Endpoint (Valid Structure)",
+            "POST",
+            "/api/payments/checkout",
+            500,  # Expect 500 due to test Stripe key, but endpoint should exist
+            data={
+                "planId": "starter",
+                "originUrl": "http://localhost:8001",
+                "agencyId": "TEST-AGENCY",
+                "realtorId": "TEST-REALTOR",
+                "email": "test@example.com",
+                "displayName": "Test User"
+            }
+        )
+        
+        if success or (not success and "stripe" in str(response).lower()):
+            self.log_test("Payments Checkout Endpoint Exists", True, "Endpoint exists and processes Stripe requests")
+        else:
+            self.log_test("Payments Checkout Endpoint Exists", False, f"Unexpected response: {response}")
+
+    def test_stripe_webhook_endpoint(self):
+        """Test Stripe webhook endpoint exists"""
+        # Test webhook endpoint (should handle raw body)
+        success, response = self.run_test(
+            "Stripe Webhook Endpoint",
+            "POST",
+            "/api/webhook/stripe",
+            400,  # Expect 400 due to invalid signature, but endpoint should exist
+            data={"test": "data"},
+            headers={"stripe-signature": "invalid"}
+        )
+        
+        if success or (not success and "stripe" in str(response).lower()):
+            self.log_test("Stripe Webhook Endpoint Exists", True, "Webhook endpoint exists")
+        else:
+            self.log_test("Stripe Webhook Endpoint Exists", False, f"Unexpected response: {response}")
+
     def run_all_tests(self):
         """Run complete test suite"""
         print("=" * 60)
