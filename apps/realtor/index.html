@@ -1,10 +1,227 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>ClickEstate Realtor Portal</title>
-<link rel='stylesheet' href='/assets/css/shared.css'><link rel='stylesheet' href='/realtor/realtor.css'></head>
-<body class='texture'>
-<section id='loginView' class='login-wrap'><div class='card login-card'><h1>Realtor Portal</h1><p class='muted'>Manage listings, requests, and pipeline in one place.</p>
-<input id='user' class='input' placeholder='Agency ID, Email or Realtor ID'><input id='pass' class='input' type='password' placeholder='Password'><button id='loginBtn' class='btn btn-primary'>Login</button></div></section>
-<section id='appView' class='shell hidden'>
-<aside class='sidebar'><h3>ClickEstate</h3><a class='nav-item active' data-tab='dashboard'>Dashboard</a><a class='nav-item' data-tab='listings'>Listings</a><a class='nav-item' data-tab='pipeline'>Leads Pipeline</a><a class='nav-item' data-tab='requests'>Requests</a><a class='nav-item' data-tab='profile'>Profile</a><a class='nav-item' data-tab='settings'>Settings</a></aside>
-<main class='main'><div id='content'></div></main></section>
-<script src='/assets/js/api.js'></script><script src='/assets/js/ui.js'></script><script src='/assets/js/formatters.js'></script><script src='/realtor/realtor.js'></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClickEstate | Realtor Portal</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ff3b30',
+            surface: '#121212',
+            border: '#262626'
+          },
+          fontFamily: {
+            clash: ['Clash Display', 'sans-serif'],
+            satoshi: ['Satoshi', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Socket.io Client -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <link rel="stylesheet" href="realtor.css">
+</head>
+<body class="bg-[#050505] text-white font-satoshi">
+  
+  <!-- Login View -->
+  <section id="login-view" class="min-h-screen flex items-center justify-center p-4" data-testid="login-view">
+    <div class="login-card w-full max-w-md" data-testid="login-card">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div class="relative bg-[#0a0a0a] border border-[#262626] rounded-2xl p-8 md:p-10">
+        <div class="text-center mb-8">
+          <h1 class="font-clash font-bold text-3xl mb-2">
+            Click<span class="text-primary">Estate</span>
+          </h1>
+          <p class="text-[#a1a1aa]">Realtor Portal</p>
+        </div>
+        
+        <form id="login-form" class="space-y-5">
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-2 block">Email, Agency ID, or Realtor ID</label>
+            <div class="relative">
+              <i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-[#666]"></i>
+              <input 
+                type="text" 
+                id="login-user" 
+                required
+                class="w-full bg-[#121212] border border-[#262626] rounded-lg pl-12 pr-4 py-3 text-white focus:border-primary focus:outline-none transition-colors" 
+                placeholder="Enter your credentials"
+                data-testid="login-user"
+              >
+            </div>
+          </div>
+          
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-2 block">Password</label>
+            <div class="relative">
+              <i class="ph ph-lock absolute left-4 top-1/2 -translate-y-1/2 text-[#666]"></i>
+              <input 
+                type="password" 
+                id="login-pass" 
+                required
+                class="w-full bg-[#121212] border border-[#262626] rounded-lg pl-12 pr-4 py-3 text-white focus:border-primary focus:outline-none transition-colors" 
+                placeholder="••••••••"
+                data-testid="login-pass"
+              >
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="w-full bg-primary text-white py-4 rounded-lg font-medium uppercase tracking-wider hover:bg-[#d63026] transition-all duration-300 flex items-center justify-center gap-2"
+            data-testid="login-submit"
+          >
+            <span>Sign In</span>
+            <i class="ph ph-arrow-right"></i>
+          </button>
+        </form>
+        
+        <p class="text-center text-[#666] text-sm mt-6">
+          Powered by Pytch Marketing LLC
+        </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- App Shell -->
+  <section id="app-view" class="hidden" data-testid="app-view">
+    <!-- Sidebar -->
+    <aside class="sidebar" data-testid="sidebar">
+      <div class="sidebar-header">
+        <a href="/storefront" class="font-clash font-bold text-xl">
+          Click<span class="text-primary">Estate</span>
+        </a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-tab="dashboard" data-testid="nav-dashboard">
+          <i class="ph ph-house-simple"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="listings" data-testid="nav-listings">
+          <i class="ph ph-buildings"></i>
+          <span>Listings</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="pipeline" data-testid="nav-pipeline">
+          <i class="ph ph-kanban"></i>
+          <span>Pipeline</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="requests" data-testid="nav-requests">
+          <i class="ph ph-clipboard-text"></i>
+          <span>Requests</span>
+          <span id="requests-badge" class="nav-badge hidden">0</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="profile" data-testid="nav-profile">
+          <i class="ph ph-user-circle"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors" data-testid="logout-btn">
+          <i class="ph ph-sign-out"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar" data-testid="topbar">
+        <button id="mobile-sidebar-btn" class="lg:hidden p-2 -ml-2" data-testid="mobile-sidebar-btn">
+          <i class="ph ph-list text-2xl"></i>
+        </button>
+        
+        <div class="flex-1"></div>
+        
+        <div class="flex items-center gap-4">
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notifications-btn" class="relative p-2 hover:bg-[#1a1a1a] rounded-lg transition-colors" data-testid="notifications-btn">
+              <i class="ph ph-bell text-xl"></i>
+              <span id="notification-dot" class="hidden absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+            </button>
+            
+            <div id="notifications-dropdown" class="hidden absolute right-0 top-full mt-2 w-80 bg-[#0a0a0a] border border-[#262626] rounded-lg shadow-xl z-50" data-testid="notifications-dropdown">
+              <div class="p-4 border-b border-[#262626]">
+                <h3 class="font-semibold">Notifications</h3>
+              </div>
+              <div id="notifications-list" class="max-h-80 overflow-y-auto">
+                <div class="p-4 text-center text-[#666]">No new notifications</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- User Menu -->
+          <div class="flex items-center gap-3">
+            <div id="user-avatar" class="w-9 h-9 bg-primary/20 rounded-full flex items-center justify-center">
+              <i class="ph ph-user text-primary"></i>
+            </div>
+            <div class="hidden md:block">
+              <p id="user-name" class="text-sm font-medium" data-testid="user-name">User</p>
+              <p id="user-role" class="text-xs text-[#a1a1aa]" data-testid="user-role">Realtor</p>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div id="content" class="content-area" data-testid="content-area">
+        <!-- Content loaded dynamically -->
+      </div>
+    </main>
+  </section>
+  
+  <!-- Listing Drawer -->
+  <div id="listing-drawer" class="drawer" data-testid="listing-drawer">
+    <div class="drawer-overlay"></div>
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <h2 id="drawer-title" class="font-clash font-bold text-xl">New Listing</h2>
+        <button id="drawer-close" class="p-2 hover:bg-[#1a1a1a] rounded-lg" data-testid="drawer-close">
+          <i class="ph ph-x text-xl"></i>
+        </button>
+      </div>
+      <div id="drawer-body" class="drawer-body">
+        <!-- Form content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3" data-testid="toast-container"></div>
+  
+  <!-- Scripts -->
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/formatters.js"></script>
+  <script src="realtor.js"></script>
+</body>
+</html>
