@@ -94,6 +94,7 @@ Build a production-grade SaaS platform that serves as a "digital storefront + le
 - [x] Cloudinary media upload with signed URLs
 - [x] WebSocket (Socket.io) for real-time events
 - [x] Email notifications (Nodemailer)
+- [x] **AI Description Generator** (OpenAI GPT-4o)
 - [x] Plan limit enforcement
 - [x] CORS, Helmet, Rate limiting
 - [x] Health endpoint
