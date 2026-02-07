@@ -115,4 +115,72 @@ Write the improved description (keep similar length, 150-200 words):`;
   }
 }
 
-module.exports = { generatePropertyDescription, improvePropertyDescription };
+async function analyzePropertyImage(imageBase64) {
+  const client = getOpenAI();
+  if (!client) {
+    return { ok: false, error: 'AI not configured - EMERGENT_LLM_KEY not set' };
+  }
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a real estate photo analyzer. Identify property features visible in images and return them as tags.'
+        },
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: `Analyze this real estate property image and identify all visible features. Return ONLY a JSON array of feature tags (lowercase, no explanations).
+
+Examples of features to detect:
+- Property type: house, apartment, villa, condo, townhouse
+- Rooms: bedroom, bathroom, kitchen, living room, dining room, office, garage
+- Outdoor: pool, garden, patio, deck, balcony, driveway, lawn
+- Views: ocean view, mountain view, city view, lake view, garden view
+- Style: modern, traditional, colonial, mediterranean, contemporary, minimalist
+- Features: fireplace, high ceilings, hardwood floors, granite counters, stainless appliances, walk-in closet, en-suite bathroom
+- Amenities: gym, spa, security gate, smart home, solar panels
+- Condition: renovated, new construction, well-maintained
+
+Return format: ["tag1", "tag2", "tag3", ...]`
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageBase64.startsWith('data:') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 300
+    });
+
+    const content = completion.choices[0]?.message?.content?.trim();
+    
+    // Parse the JSON array from the response
+    let tags = [];
+    try {
+      // Try to extract JSON array from the response
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        tags = JSON.parse(jsonMatch[0]);
+      }
+    } catch (parseError) {
+      // If JSON parsing fails, try to extract tags from comma-separated list
+      tags = content.split(',').map(t => t.trim().toLowerCase().replace(/["\[\]]/g, '')).filter(Boolean);
+    }
+
+    return { ok: true, tags };
+    
+  } catch (error) {
+    console.error('[AI] Error analyzing image:', error.message);
+    return { ok: false, error: error.message };
+  }
+}
+
+module.exports = { generatePropertyDescription, improvePropertyDescription, analyzePropertyImage };
