@@ -211,6 +211,82 @@ class ClickEstateAPITester:
             200
         )
 
+    def test_ai_endpoints_without_auth(self):
+        """Test AI endpoints require authentication"""
+        # Clear token for this test
+        old_token = self.token
+        self.token = None
+        
+        # Test generate-description without auth
+        self.run_test(
+            "AI Generate Description (No Auth)",
+            "POST",
+            "/api/ai/generate-description",
+            401,
+            data={"title": "Test Property", "property_type": "house"}
+        )
+        
+        # Test improve-description without auth
+        self.run_test(
+            "AI Improve Description (No Auth)",
+            "POST",
+            "/api/ai/improve-description",
+            401,
+            data={"currentDescription": "Test description", "instructions": "Make it better"}
+        )
+        
+        # Restore token
+        self.token = old_token
+
+    def test_ai_endpoints_with_admin_token(self):
+        """Test AI endpoints reject admin tokens (require realtor role)"""
+        if not self.token:
+            self.log_test("AI Endpoints Admin Token Test", False, "No admin token available")
+            return False
+        
+        # Test generate-description with admin token (should return 403)
+        self.run_test(
+            "AI Generate Description (Admin Token - Should Fail)",
+            "POST",
+            "/api/ai/generate-description",
+            403,
+            data={"title": "Test Property", "property_type": "house"}
+        )
+        
+        # Test improve-description with admin token (should return 403)
+        self.run_test(
+            "AI Improve Description (Admin Token - Should Fail)",
+            "POST",
+            "/api/ai/improve-description",
+            403,
+            data={"currentDescription": "Test description", "instructions": "Make it better"}
+        )
+
+    def test_ai_endpoints_structure(self):
+        """Test AI endpoints exist and return proper error messages"""
+        # Test with admin token to check endpoint existence (should get 403, not 404)
+        if not self.token:
+            self.log_test("AI Endpoints Structure Test", False, "No admin token available")
+            return False
+        
+        # Test generate-description endpoint exists
+        success, response = self.run_test(
+            "AI Generate Description Endpoint Exists",
+            "POST",
+            "/api/ai/generate-description",
+            403,  # Should get 403 (forbidden) not 404 (not found)
+            data={"title": "Test Property"}
+        )
+        
+        # Test improve-description endpoint exists
+        success2, response2 = self.run_test(
+            "AI Improve Description Endpoint Exists",
+            "POST",
+            "/api/ai/improve-description",
+            403,  # Should get 403 (forbidden) not 404 (not found)
+            data={"currentDescription": "Test description"}
+        )
+
     def test_cors_headers(self):
         """Test CORS headers are present"""
         try:
