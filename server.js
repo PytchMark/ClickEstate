@@ -348,6 +348,85 @@ app.post('/api/ai/improve-description', requireAuth, requireRealtor, async (req,
   } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
 });
 
+// Analyze property image for tags
+app.post('/api/ai/analyze-image', requireAuth, requireRealtor, async (req, res) => {
+  try {
+    const { imageBase64 } = req.body;
+    if (!imageBase64) {
+      return res.status(400).json({ ok: false, error: 'imageBase64 is required' });
+    }
+    const result = await analyzePropertyImage(imageBase64);
+    if (!result.ok) {
+      return res.status(500).json({ ok: false, error: result.error });
+    }
+    return res.json({ ok: true, tags: result.tags });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// ==================== STRIPE PAYMENT ENDPOINTS ====================
+
+// Get pricing plans
+app.get('/api/public/plans', (req, res) => {
+  return res.json({ ok: true, plans: getPlans() });
+});
+
+// Create checkout session
+app.post('/api/payments/checkout', async (req, res) => {
+  try {
+    const { planId, originUrl, agencyId, realtorId, email, displayName } = req.body;
+    
+    if (!planId || !originUrl) {
+      return res.status(400).json({ ok: false, error: 'planId and originUrl are required' });
+    }
+
+    const result = await createCheckoutSession({
+      planId,
+      originUrl,
+      metadata: {
+        agency_id: agencyId || '',
+        realtor_id: realtorId || '',
+        email: email || '',
+        display_name: displayName || ''
+      }
+    });
+
+    if (!result.ok) {
+      return res.status(500).json({ ok: false, error: result.error });
+    }
+
+    return res.json({ ok: true, url: result.url, sessionId: result.sessionId });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// Get checkout session status
+app.get('/api/payments/status/:sessionId', async (req, res) => {
+  try {
+    const result = await getCheckoutStatus(req.params.sessionId);
+    if (!result.ok) {
+      return res.status(500).json({ ok: false, error: result.error });
+    }
+    return res.json({ ok: true, ...result });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// Stripe webhook
+app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const result = await handleWebhook(req.body, req.headers['stripe-signature']);
+    if (!result.ok) {
+      return res.status(400).json({ ok: false, error: result.error });
+    }
+    
+    // Handle successful payment
+    if (result.eventType === 'checkout.session.completed' && result.paymentStatus === 'paid') {
+      console.log('[Stripe] Payment successful for session:', result.sessionId);
+      // Here you would create the realtor account in the database
+    }
+    
+    return res.json({ ok: true, received: true });
+  } catch (e) { return res.status(500).json({ ok: false, error: e.message }); }
+});
+
 app.get('/api/realtor/requests', requireAuth, requireRealtor, async (req, res) => {
   try {
     let query = `?agency_id=eq.${req.user.agency_id}`;
