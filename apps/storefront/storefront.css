@@ -544,3 +544,84 @@ html.lenis {
 ::-webkit-scrollbar-thumb:hover {
   background: #333;
 }
+
+/* ==================== Testimonial Banner ==================== */
+.testimonial-track {
+  display: flex;
+  gap: 24px;
+  animation: scroll-testimonials 40s linear infinite;
+  width: max-content;
+}
+
+.testimonial-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-testimonials {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.testimonial-item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: rgba(18, 18, 18, 0.5);
+  border: 1px solid #262626;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.testimonial-item .quote {
+  color: #a1a1aa;
+  font-style: italic;
+}
+
+.testimonial-item .author {
+  color: #ff3b30;
+  font-weight: 500;
+}
+
+/* ==================== Mortgage Calculator ==================== */
+.slider-primary {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, #ff3b30 0%, #ff3b30 var(--value, 50%), #262626 var(--value, 50%), #262626 100%);
+  border-radius: 8px;
+  height: 8px;
+}
+
+.slider-primary::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: #ff3b30;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 4px solid #050505;
+  box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.slider-primary::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.7);
+}
+
+.slider-primary::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #ff3b30;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 4px solid #050505;
+  box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+}
+
+.term-btn.active {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.1);
+}
