@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Join ClickEstate - The premier platform for real estate professionals. Manage listings, track leads, grow your business.">
+  <title>Become a ClickEstate Partner | Realtor Signup</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ff3b30',
+            surface: '#121212',
+            border: '#262626'
+          },
+          fontFamily: {
+            clash: ['Clash Display', 'sans-serif'],
+            satoshi: ['Satoshi', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <style>
+    .gradient-text {
+      background: linear-gradient(135deg, #ff3b30 0%, #ff6b5b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .plan-card {
+      background: #0a0a0a;
+      border: 1px solid #262626;
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .plan-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #ff3b30, transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    
+    .plan-card:hover {
+      border-color: #ff3b30;
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(255, 59, 48, 0.15);
+    }
+    
+    .plan-card:hover::before {
+      transform: translateX(100%);
+    }
+    
+    .plan-card.popular {
+      border-color: #ff3b30;
+      background: linear-gradient(180deg, rgba(255, 59, 48, 0.05) 0%, #0a0a0a 50%);
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      color: #a1a1aa;
+    }
+    
+    .feature-item i {
+      color: #ff3b30;
+      font-size: 18px;
+    }
+    
+    .dashboard-preview {
+      background: #0a0a0a;
+      border: 1px solid #262626;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+    
+    .dashboard-header {
+      background: #050505;
+      padding: 12px 20px;
+      border-bottom: 1px solid #262626;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .dashboard-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .testimonial-track {
+      display: flex;
+      gap: 24px;
+      animation: scroll-left 30s linear infinite;
+    }
+    
+    @keyframes scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    
+    .testimonial-card {
+      flex-shrink: 0;
+      background: #0a0a0a;
+      border: 1px solid #262626;
+      border-radius: 12px;
+      padding: 24px;
+      width: 350px;
+    }
+    
+    .form-input {
+      width: 100%;
+      background: #121212;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: white;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #ff3b30;
+    }
+    
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+  </style>
+</head>
+<body class="bg-[#050505] text-white font-satoshi">
+  
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#050505]/90 backdrop-blur-xl border-b border-[#262626]">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/storefront" class="font-clash font-bold text-2xl">
+        Click<span class="text-primary">Estate</span>
+      </a>
+      <a href="/realtor" class="text-[#a1a1aa] hover:text-white transition-colors text-sm">
+        Already a partner? Sign In
+      </a>
+    </div>
+  </nav>
+  
+  <!-- Hero Section -->
+  <section class="pt-32 pb-20 px-6" data-testid="signup-hero">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="reveal">
+          <span class="inline-block px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium mb-6">
+            Join 500+ Real Estate Professionals
+          </span>
+          <h1 class="font-clash font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] mb-6">
+            Grow Your Real Estate <span class="gradient-text">Business</span>
+          </h1>
+          <p class="text-[#a1a1aa] text-lg mb-8 max-w-lg">
+            The all-in-one platform to manage listings, capture leads, and close more deals. Join the future of real estate.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="#pricing" class="bg-primary text-white px-8 py-4 rounded-lg font-medium hover:bg-[#d63026] transition-all duration-300 flex items-center gap-2">
+              View Plans
+              <i class="ph ph-arrow-down"></i>
+            </a>
+            <a href="#features" class="border border-[#262626] px-8 py-4 rounded-lg font-medium hover:bg-[#1a1a1a] transition-colors">
+              See Features
+            </a>
+          </div>
+        </div>
+        
+        <!-- Dashboard Preview -->
+        <div class="reveal dashboard-preview">
+          <div class="dashboard-header">
+            <div class="dashboard-dot bg-[#ff5f57]"></div>
+            <div class="dashboard-dot bg-[#febc2e]"></div>
+            <div class="dashboard-dot bg-[#28c840]"></div>
+            <span class="ml-4 text-[#666] text-sm">ClickEstate Dashboard</span>
+          </div>
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop" alt="Dashboard Preview" class="w-full">
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Stats Banner -->
+  <section class="py-12 border-y border-[#262626] bg-[#0a0a0a]">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div class="reveal">
+          <div class="font-clash font-bold text-4xl text-primary mb-2">500+</div>
+          <div class="text-[#a1a1aa]">Active Agents</div>
+        </div>
+        <div class="reveal">
+          <div class="font-clash font-bold text-4xl text-primary mb-2">12K+</div>
+          <div class="text-[#a1a1aa]">Listings Created</div>
+        </div>
+        <div class="reveal">
+          <div class="font-clash font-bold text-4xl text-primary mb-2">45K+</div>
+          <div class="text-[#a1a1aa]">Leads Generated</div>
+        </div>
+        <div class="reveal">
+          <div class="font-clash font-bold text-4xl text-primary mb-2">98%</div>
+          <div class="text-[#a1a1aa]">Satisfaction Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section id="features" class="py-24 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 reveal">
+        <span class="text-primary uppercase tracking-[0.3em] text-sm mb-4 block">Platform Features</span>
+        <h2 class="font-clash font-bold text-4xl md:text-5xl">Everything You Need</h2>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="reveal p-6 bg-[#0a0a0a] border border-[#262626] rounded-xl hover:border-primary transition-colors">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <i class="ph ph-house text-2xl text-primary"></i>
+          </div>
+          <h3 class="font-clash font-semibold text-xl mb-3">Listing Management</h3>
+          <p class="text-[#a1a1aa]">Create beautiful property listings with photos, videos, and detailed descriptions. AI-powered copywriting included.</p>
+        </div>
+        
+        <div class="reveal p-6 bg-[#0a0a0a] border border-[#262626] rounded-xl hover:border-primary transition-colors">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <i class="ph ph-users text-2xl text-primary"></i>
+          </div>
+          <h3 class="font-clash font-semibold text-xl mb-3">Lead Pipeline</h3>
+          <p class="text-[#a1a1aa]">Track every lead from first contact to closed deal. Kanban-style pipeline keeps you organized.</p>
+        </div>
+        
+        <div class="reveal p-6 bg-[#0a0a0a] border border-[#262626] rounded-xl hover:border-primary transition-colors">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <i class="ph ph-chart-line-up text-2xl text-primary"></i>
+          </div>
+          <h3 class="font-clash font-semibold text-xl mb-3">Analytics Dashboard</h3>
+          <p class="text-[#a1a1aa]">Real-time insights into your performance. Track views, requests, and conversion rates.</p>
+        </div>
+        
+        <div class="reveal p-6 bg-[#0a0a0a] border border-[#262626] rounded-xl hover:border-primary transition-colors">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <i class="ph ph-sparkle text-2xl text-primary"></i>
+          </div>
+          <h3 class="font-clash font-semibold text-xl mb-3">AI-Powered Tools</h3>
+          <p class="text-[#a1a1aa]">Generate compelling descriptions and auto-tag property features using advanced AI.</p>
+        </div>
+        
+        <div class="reveal p-6 bg-[#0a0a0a] border border-[#262626] rounded-xl hover:border-primary transition-colors">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <i class="ph ph-bell-ringing text-2xl text-primary"></i>
+          </div>
+          <h3 class="font-clash font-semibold text-xl mb-3">Instant Notifications</h3>
+          <p class="text-[#a1a1aa]">Get real-time alerts when new leads come in. Never miss an opportunity again.</p>
+        </div>
+        
+        <div class="reveal p-6 bg-[#0a0a0a] border border-[#262626] rounded-xl hover:border-primary transition-colors">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <i class="ph ph-whatsapp-logo text-2xl text-primary"></i>
+          </div>
+          <h3 class="font-clash font-semibold text-xl mb-3">WhatsApp Integration</h3>
+          <p class="text-[#a1a1aa]">Connect with leads instantly via WhatsApp. One-click contact from any listing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Pricing Section -->
+  <section id="pricing" class="py-24 px-6 bg-[#0a0a0a] border-y border-[#262626]">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 reveal">
+        <span class="text-primary uppercase tracking-[0.3em] text-sm mb-4 block">Pricing Plans</span>
+        <h2 class="font-clash font-bold text-4xl md:text-5xl mb-4">Choose Your Plan</h2>
+        <p class="text-[#a1a1aa] max-w-xl mx-auto">Start with a plan that fits your needs. Upgrade anytime as your business grows.</p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8" id="plans-container" data-testid="plans-container">
+        <!-- Plans loaded dynamically -->
+      </div>
+    </div>
+  </section>
+  
+  <!-- Testimonials Running Banner -->
+  <section class="py-16 overflow-hidden border-b border-[#262626]">
+    <div class="mb-12 text-center">
+      <span class="text-primary uppercase tracking-[0.3em] text-sm">What Our Partners Say</span>
+    </div>
+    <div class="testimonial-track" id="testimonial-track">
+      <!-- Testimonials duplicated for infinite scroll -->
+    </div>
+  </section>
+  
+  <!-- Signup Form Section -->
+  <section id="signup-form" class="py-24 px-6">
+    <div class="max-w-xl mx-auto">
+      <div class="text-center mb-12 reveal">
+        <h2 class="font-clash font-bold text-3xl mb-4">Ready to Get Started?</h2>
+        <p class="text-[#a1a1aa]">Fill in your details and select a plan to begin</p>
+      </div>
+      
+      <form id="signup-form-element" class="space-y-6 reveal" data-testid="signup-form">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-2 block">Agency ID</label>
+            <input type="text" id="form-agency-id" class="form-input" placeholder="AGY-0001" required data-testid="form-agency-id">
+          </div>
+          <div>
+            <label class="text-[#a1a1aa] text-sm mb-2 block">Realtor ID</label>
+            <input type="text" id="form-realtor-id" class="form-input" placeholder="REA-0001" required data-testid="form-realtor-id">
+          </div>
+        </div>
+        
+        <div>
+          <label class="text-[#a1a1aa] text-sm mb-2 block">Full Name</label>
+          <input type="text" id="form-name" class="form-input" placeholder="John Smith" required data-testid="form-name">
+        </div>
+        
+        <div>
+          <label class="text-[#a1a1aa] text-sm mb-2 block">Email</label>
+          <input type="email" id="form-email" class="form-input" placeholder="john@example.com" required data-testid="form-email">
+        </div>
+        
+        <div>
+          <label class="text-[#a1a1aa] text-sm mb-2 block">Phone</label>
+          <input type="tel" id="form-phone" class="form-input" placeholder="+1 (555) 000-0000" data-testid="form-phone">
+        </div>
+        
+        <div>
+          <label class="text-[#a1a1aa] text-sm mb-2 block">Selected Plan</label>
+          <select id="form-plan" class="form-input" required data-testid="form-plan">
+            <option value="">Select a plan</option>
+            <option value="starter">Starter - $29/mo</option>
+            <option value="pro">Pro - $79/mo</option>
+            <option value="unlimited">Unlimited - $199/mo</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="w-full bg-primary text-white py-4 rounded-lg font-medium text-lg hover:bg-[#d63026] transition-colors flex items-center justify-center gap-2" data-testid="submit-signup">
+          <span>Continue to Payment</span>
+          <i class="ph ph-arrow-right"></i>
+        </button>
+        
+        <p class="text-center text-[#666] text-sm">
+          Secure payment powered by Stripe. Cancel anytime.
+        </p>
+      </form>
+      
+      <!-- Success Message -->
+      <div id="success-message" class="hidden text-center py-12">
+        <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="ph ph-check text-4xl text-green-500"></i>
+        </div>
+        <h3 class="font-clash font-bold text-2xl mb-4">Welcome to ClickEstate!</h3>
+        <p class="text-[#a1a1aa] mb-6">Your account is being set up. Check your email for login instructions.</p>
+        <a href="/realtor" class="inline-block bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-[#d63026] transition-colors">
+          Go to Portal
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="py-12 border-t border-[#262626]">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <a href="/storefront" class="font-clash font-bold text-xl mb-4 block">
+        Click<span class="text-primary">Estate</span>
+      </a>
+      <p class="text-[#666] text-sm">Powered by Pytch Marketing LLC</p>
+    </div>
+  </footer>
+  
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <script>
+    // Testimonials data
+    const testimonials = [
+      { name: "Sarah Johnson", role: "Real Estate Agent", quote: "ClickEstate transformed my business. I'm closing 3x more deals!" },
+      { name: "Michael Chen", role: "Agency Owner", quote: "The analytics alone are worth the subscription. Game changer." },
+      { name: "Emily Rodriguez", role: "Realtor", quote: "Best decision I made for my career. The AI tools save me hours." },
+      { name: "David Thompson", role: "Property Manager", quote: "Finally, a platform that understands real estate professionals." },
+      { name: "Jessica Williams", role: "Broker", quote: "My team's productivity doubled within the first month." },
+      { name: "Robert Davis", role: "Independent Agent", quote: "The lead notifications are instant. I never miss an opportunity." }
+    ];
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      initAnimations();
+      loadPlans();
+      renderTestimonials();
+      checkPaymentStatus();
+      
+      document.getElementById('signup-form-element').addEventListener('submit', handleSignup);
+    });
+    
+    // GSAP Animations
+    function initAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      gsap.utils.toArray('.reveal').forEach((el, i) => {
+        gsap.to(el, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          delay: i * 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+      });
+    }
+    
+    // Load pricing plans
+    async function loadPlans() {
+      try {
+        const res = await fetch('/api/public/plans');
+        const data = await res.json();
+        
+        if (data.ok && data.plans) {
+          renderPlans(data.plans);
+        }
+      } catch (error) {
+        console.error('Failed to load plans:', error);
+      }
+    }
+    
+    function renderPlans(plans) {
+      const container = document.getElementById('plans-container');
+      const planOrder = ['starter', 'pro', 'unlimited'];
+      
+      container.innerHTML = planOrder.map((key, index) => {
+        const plan = plans[key];
+        const isPopular = key === 'pro';
+        
+        return `
+          <div class="plan-card ${isPopular ? 'popular' : ''} reveal" data-testid="plan-${key}">
+            ${isPopular ? '<div class="absolute top-4 right-4 bg-primary text-white text-xs px-3 py-1 rounded-full font-medium">Most Popular</div>' : ''}
+            <h3 class="font-clash font-bold text-2xl mb-2">${plan.name}</h3>
+            <div class="mb-6">
+              <span class="font-clash font-bold text-4xl">$${plan.price}</span>
+              <span class="text-[#a1a1aa]">/month</span>
+            </div>
+            <div class="space-y-1 mb-8">
+              ${plan.features.map(f => `
+                <div class="feature-item">
+                  <i class="ph ph-check-circle"></i>
+                  <span>${f}</span>
+                </div>
+              `).join('')}
+            </div>
+            <button onclick="selectPlan('${key}')" class="w-full ${isPopular ? 'bg-primary hover:bg-[#d63026]' : 'bg-[#1a1a1a] hover:bg-[#262626]'} text-white py-3 rounded-lg font-medium transition-colors" data-testid="select-${key}">
+              Get Started
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function selectPlan(planId) {
+      document.getElementById('form-plan').value = planId;
+      document.getElementById('signup-form').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Render testimonials
+    function renderTestimonials() {
+      const track = document.getElementById('testimonial-track');
+      const cards = testimonials.map(t => `
+        <div class="testimonial-card">
+          <p class="text-lg mb-4">"${t.quote}"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+              <i class="ph ph-user text-primary"></i>
+            </div>
+            <div>
+              <div class="font-medium">${t.name}</div>
+              <div class="text-[#666] text-sm">${t.role}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      // Duplicate for infinite scroll
+      track.innerHTML = cards + cards;
+    }
+    
+    // Handle signup
+    async function handleSignup(e) {
+      e.preventDefault();
+      
+      const planId = document.getElementById('form-plan').value;
+      const agencyId = document.getElementById('form-agency-id').value;
+      const realtorId = document.getElementById('form-realtor-id').value;
+      const email = document.getElementById('form-email').value;
+      const displayName = document.getElementById('form-name').value;
+      
+      if (!planId) {
+        showToast('Please select a plan', 'error');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/payments/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            planId,
+            originUrl: window.location.origin,
+            agencyId,
+            realtorId,
+            email,
+            displayName
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (data.ok && data.url) {
+          window.location.href = data.url;
+        } else {
+          showToast(data.error || 'Failed to create checkout', 'error');
+        }
+      } catch (error) {
+        showToast('Payment service unavailable', 'error');
+      }
+    }
+    
+    // Check payment status on return
+    function checkPaymentStatus() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+      const success = params.get('success');
+      const canceled = params.get('canceled');
+      
+      if (canceled) {
+        showToast('Payment canceled. You can try again anytime.', 'error');
+        return;
+      }
+      
+      if (success && sessionId) {
+        pollPaymentStatus(sessionId);
+      }
+    }
+    
+    async function pollPaymentStatus(sessionId, attempts = 0) {
+      if (attempts >= 5) {
+        showToast('Payment verification timed out. Please contact support.', 'error');
+        return;
+      }
+      
+      try {
+        const res = await fetch(`/api/payments/status/${sessionId}`);
+        const data = await res.json();
+        
+        if (data.ok && data.paymentStatus === 'paid') {
+          document.getElementById('signup-form-element').classList.add('hidden');
+          document.getElementById('success-message').classList.remove('hidden');
+          showToast('Payment successful! Welcome to ClickEstate.', 'success');
+        } else if (data.status === 'expired') {
+          showToast('Session expired. Please try again.', 'error');
+        } else {
+          setTimeout(() => pollPaymentStatus(sessionId, attempts + 1), 2000);
+        }
+      } catch (error) {
+        showToast('Error verifying payment', 'error');
+      }
+    }
+    
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `bg-[#121212] border ${type === 'success' ? 'border-green-500' : 'border-red-500'} rounded-lg px-6 py-4 flex items-center gap-3 animate-slide-in`;
+      toast.innerHTML = `
+        <i class="ph ${type === 'success' ? 'ph-check-circle text-green-500' : 'ph-x-circle text-red-500'} text-xl"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
