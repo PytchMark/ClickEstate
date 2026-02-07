@@ -312,6 +312,118 @@
     </div>
   </section>
   
+  <!-- Testimonial Running Banner -->
+  <section class="py-12 overflow-hidden border-y border-[#262626] bg-[#0a0a0a]" data-testid="testimonial-banner">
+    <div class="testimonial-track" id="testimonial-track">
+      <!-- Duplicated for infinite scroll effect -->
+    </div>
+  </section>
+  
+  <!-- Mortgage Calculator Section -->
+  <section id="mortgage" class="py-20" data-testid="mortgage-section">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="text-primary uppercase tracking-[0.3em] text-sm mb-4 reveal-up">Financial Planning</p>
+          <h2 class="font-clash font-bold text-4xl md:text-5xl mb-6 reveal-up">Mortgage Calculator</h2>
+          <p class="text-[#a1a1aa] text-lg mb-8 reveal-up">Estimate your monthly payments and plan your property purchase with confidence.</p>
+          
+          <div class="space-y-8 reveal-up">
+            <!-- Home Price Slider -->
+            <div>
+              <div class="flex justify-between mb-3">
+                <label class="text-[#a1a1aa]">Home Price</label>
+                <span id="price-display" class="font-clash font-bold text-primary">$500,000</span>
+              </div>
+              <input type="range" id="mortgage-price" min="50000" max="2000000" step="10000" value="500000" 
+                class="w-full h-2 bg-[#262626] rounded-lg appearance-none cursor-pointer slider-primary" data-testid="mortgage-price">
+              <div class="flex justify-between text-[#666] text-sm mt-1">
+                <span>$50K</span>
+                <span>$2M</span>
+              </div>
+            </div>
+            
+            <!-- Down Payment Slider -->
+            <div>
+              <div class="flex justify-between mb-3">
+                <label class="text-[#a1a1aa]">Down Payment</label>
+                <span id="downpayment-display" class="font-clash font-bold text-primary">20% ($100,000)</span>
+              </div>
+              <input type="range" id="mortgage-downpayment" min="0" max="50" step="5" value="20" 
+                class="w-full h-2 bg-[#262626] rounded-lg appearance-none cursor-pointer slider-primary" data-testid="mortgage-downpayment">
+              <div class="flex justify-between text-[#666] text-sm mt-1">
+                <span>0%</span>
+                <span>50%</span>
+              </div>
+            </div>
+            
+            <!-- Interest Rate Slider -->
+            <div>
+              <div class="flex justify-between mb-3">
+                <label class="text-[#a1a1aa]">Interest Rate</label>
+                <span id="rate-display" class="font-clash font-bold text-primary">6.5%</span>
+              </div>
+              <input type="range" id="mortgage-rate" min="1" max="15" step="0.25" value="6.5" 
+                class="w-full h-2 bg-[#262626] rounded-lg appearance-none cursor-pointer slider-primary" data-testid="mortgage-rate">
+              <div class="flex justify-between text-[#666] text-sm mt-1">
+                <span>1%</span>
+                <span>15%</span>
+              </div>
+            </div>
+            
+            <!-- Loan Term -->
+            <div>
+              <div class="flex justify-between mb-3">
+                <label class="text-[#a1a1aa]">Loan Term</label>
+                <span id="term-display" class="font-clash font-bold text-primary">30 years</span>
+              </div>
+              <div class="flex gap-4">
+                <button onclick="setLoanTerm(15)" class="flex-1 py-3 rounded-lg border border-[#262626] hover:border-primary transition-colors term-btn" data-term="15">15 Years</button>
+                <button onclick="setLoanTerm(20)" class="flex-1 py-3 rounded-lg border border-[#262626] hover:border-primary transition-colors term-btn" data-term="20">20 Years</button>
+                <button onclick="setLoanTerm(30)" class="flex-1 py-3 rounded-lg border border-primary bg-primary/10 transition-colors term-btn active" data-term="30">30 Years</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Results Panel -->
+        <div class="reveal-up">
+          <div class="bg-[#0a0a0a] border border-[#262626] rounded-2xl p-8">
+            <h3 class="font-clash font-semibold text-xl mb-6 text-center">Your Monthly Payment</h3>
+            
+            <div class="text-center mb-8">
+              <div id="monthly-payment" class="font-clash font-bold text-6xl text-primary mb-2" data-testid="monthly-payment">$2,528</div>
+              <p class="text-[#a1a1aa]">per month</p>
+            </div>
+            
+            <div class="space-y-4 mb-8">
+              <div class="flex justify-between py-3 border-b border-[#262626]">
+                <span class="text-[#a1a1aa]">Principal & Interest</span>
+                <span id="pi-payment" class="font-medium">$2,528</span>
+              </div>
+              <div class="flex justify-between py-3 border-b border-[#262626]">
+                <span class="text-[#a1a1aa]">Loan Amount</span>
+                <span id="loan-amount" class="font-medium">$400,000</span>
+              </div>
+              <div class="flex justify-between py-3 border-b border-[#262626]">
+                <span class="text-[#a1a1aa]">Total Interest</span>
+                <span id="total-interest" class="font-medium">$510,177</span>
+              </div>
+              <div class="flex justify-between py-3">
+                <span class="text-[#a1a1aa]">Total Cost</span>
+                <span id="total-cost" class="font-clash font-bold text-lg">$910,177</span>
+              </div>
+            </div>
+            
+            <a href="#listings" class="block w-full bg-primary text-white py-4 rounded-lg font-medium text-center uppercase tracking-wider hover:bg-[#d63026] transition-colors">
+              Find Properties in Your Budget
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
   <!-- Footer -->
   <footer class="py-16 border-t border-[#262626]" data-testid="footer">
     <div class="max-w-[1600px] mx-auto px-6 md:px-12">
