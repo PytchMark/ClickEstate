@@ -99,11 +99,19 @@ function initThreeJS() {
 function initAnimations() {
   gsap.registerPlugin(ScrollTrigger);
   
+  // Set initial states (hidden)
+  gsap.set('.hero-tag', { opacity: 0, y: 30 });
+  gsap.set('.hero-title', { opacity: 0, y: 50 });
+  gsap.set('.hero-desc', { opacity: 0, y: 30 });
+  gsap.set('.hero-search', { opacity: 0, y: 30 });
+  gsap.set('.hero-badges', { opacity: 0, y: 20 });
+  gsap.set('.scroll-indicator', { opacity: 0 });
+  
   // Hero animations
   const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }});
   
   heroTl
-    .to('.hero-tag', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 })
+    .to('.hero-tag', { opacity: 1, y: 0, duration: 0.8, delay: 0.5 })
     .to('.hero-title', { opacity: 1, y: 0, duration: 1 }, '-=0.5')
     .to('.hero-desc', { opacity: 1, y: 0, duration: 0.8 }, '-=0.6')
     .to('.hero-search', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
